@@ -1,7 +1,6 @@
-import React from "react";
-import { styled } from "@mui/system";
-import { Box, Button, Typography } from "@mui/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import { Box, Button, Typography } from "@mui/material";
+import { styled } from "@mui/system";
 import { scrollDown } from "../../utils/helper";
 
 const CustomLargeContinueButton = styled(Button)(({ theme }) => ({
@@ -40,7 +39,7 @@ const Medium = () => {
             maxWidth: "80%",
           }}
         >
-          To build your habit plan we're going to need some details first!
+          To build your habit plan we&apos;re going to need some details first!
         </Typography>
         <CustomLargeContinueButton variant="outlined" size="large" onClick={scrollDown}>
           Continue

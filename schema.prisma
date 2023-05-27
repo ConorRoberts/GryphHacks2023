@@ -3,9 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Task {
@@ -40,4 +40,29 @@ model HabitConstraint {
   habitId Int
 
   @@index(habitId)
+}
+
+model HabitCategory {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  tier      Int
+  questions Question[]
+}
+
+model Question {
+  id     Int    @id @default(autoincrement())
+  prompt String
+
+  categoryId Int
+  category   HabitCategory @relation(fields: [categoryId], references: [id])
+
+  // "input" | "multiple"
+  type String
+
+  followUpId Int?      @unique
+  followUp   Question? @relation("FollowUpQuestion", fields: [followUpId], references: [id])
+
+  options String[]
+
+  parent Question? @relation("FollowUpQuestion")
 }
