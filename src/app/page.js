@@ -1,9 +1,9 @@
-import Image from "next/image";
+import MainSearch from "@/components/MainSearch";
 
 export default function Home() {
     return (
         <main>
-            <h1>Habit Maker</h1>
+            <MainSearch />
         </main>
     );
 }
