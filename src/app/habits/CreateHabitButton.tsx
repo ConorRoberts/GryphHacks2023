@@ -1,11 +1,14 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { CreateHabitResponse } from "../api/habits/create/route";
 
 /**
  * This button is just for testing and should not be used in the final product.
  */
 const CreateHabitButton = () => {
+  const router = useRouter();
+
   const createRandomHabit = async (desiredHabit: string) => {
     const searchParams = new URLSearchParams();
     searchParams.set("habit", desiredHabit);
@@ -15,10 +18,12 @@ const CreateHabitButton = () => {
 
     return (await res.json()) as CreateHabitResponse;
   };
+
   return (
     <button
       onClick={async () => {
         await createRandomHabit("jogging");
+        router.refresh();
       }}
     >
       Create Habit

@@ -18,7 +18,7 @@ const Page = async () => {
 
   return (
     <div className="p-4 sm:p-8">
-      <div className="mx-auto w-full max-w-xl shadow-lg rounded-xl overflow-hidden flex flex-col">
+      <div className="mx-auto w-full max-w-xl shadow-lg rounded-xl overflow-hidden flex flex-col border border-gray-100 divide-y divide-gray-100">
         {habits.map((h) => (
           <Link
             key={`habit ${h.id}`}

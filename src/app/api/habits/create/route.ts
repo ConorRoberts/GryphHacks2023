@@ -33,7 +33,7 @@ export const GET = async (request: Request) => {
     messages: [
       {
         role: "user",
-        content: `Task: Starting at day ${currentDay}, create the next 5 days of a strucured plan that helps someone build a habit of ${desiredHabit.data}\n\nRequirements:\n- The plan should be optimized so that they do not feel burned out\n- After the last day of the plan, the habit should be deeply built into their life and feel effortless to maintain\nOutput:- Format the output as JSON with the format [{day: number, action: string, duration: number}]. Do not include any text other than the JSON output.\n- The "action" field of the returned JSON represents the action they must take on a given day. It should be concise, clear, and relate directly to their habit goal.\n- For the duration of the habit building, there should be exactly one action per day`,
+        content: `Task: Starting at day ${currentDay}, create the next 5 days of a strucured plan that helps someone build a habit of ${desiredHabit.data}\n\nRequirements:\n- The plan should be optimized so that they do not feel burned out\n- After the last day of the plan, the habit should be deeply built into their life and feel effortless to maintain\nOutput:- Format the output as JSON with the format [{day: number, action: string, duration: number}]. The output should contain no other characters other than the JSON\n- The "action" field of the returned JSON represents the action they must take on a given day. It should be concise, clear, and relate directly to their habit goal.\n- For the duration of the habit building, there should be exactly one action per day.\n- Your response should contain no text other than the JSON array`,
       },
     ],
   });
@@ -51,7 +51,10 @@ export const GET = async (request: Request) => {
           description: t.action,
           isComplete: false,
           duration: t.duration,
-          startTime: dayjs().add(t.day, "days").toDate(),
+          startTime: dayjs()
+            .startOf("day")
+            .add(t.day - 1, "days")
+            .toDate(),
           userId,
         }));
 

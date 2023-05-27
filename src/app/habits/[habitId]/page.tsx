@@ -20,7 +20,7 @@ const Page = async (props: { params: { habitId: string } }) => {
   });
 
   return (
-    <div className="px-1 py-8 sm:p-8">
+    <div className="px-4 py-8 sm:p-8">
       <TaskList tasks={tasks} />
     </div>
   );
