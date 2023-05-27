@@ -11,20 +11,25 @@ const generatedTaskSchema = habitTaskSchema.omit({ id: true });
 
 export type CreateHabitResponse = { habit: Habit };
 
-export const GET = async (request: Request) => {
+export const POST = async (request: Request) => {
   const { userId } = auth();
 
   if (!userId) {
     return NextResponse.redirect("/sign-in");
   }
 
-  const { searchParams } = new URL(request.url);
-  const desiredHabit = z.string().safeParse(searchParams.get("habit"));
-  const currentDay = z.coerce.number().optional().default(1).safeParse(searchParams.get("day"));
+  const body = await request.json();
+  // const { searchParams } = new URL(request.url);
+  // const desiredHabit = z.string().safeParse(searchParams.get("habit"));
+  // const currentDay = z.coerce.number().optional().default(1).safeParse(searchParams.get("day"));
 
-  if (!desiredHabit.success) {
-    return NextResponse.json({ message: "Missing or invalid `habit` field in query parameters" }, { status: 400 });
-  }
+  // if (!desiredHabit.success) {
+  //   return NextResponse.json({ message: "Missing or invalid `habit` field in query parameters" }, { status: 400 });
+  // }
+
+  const currentDay = body.params.currentDay;
+  const habit = body.params.habit;
+  const prompt = body.params.propmt;
 
   const openai = getOpenAiClient();
 
@@ -33,7 +38,7 @@ export const GET = async (request: Request) => {
     messages: [
       {
         role: "user",
-        content: `Task: Starting at day ${currentDay}, create the next 5 days of a strucured plan that helps someone build a habit of ${desiredHabit.data}\n\nRequirements:\n- The plan should be optimized so that they do not feel burned out\n- After the last day of the plan, the habit should be deeply built into their life and feel effortless to maintain\nOutput:- Format the output as JSON with the format [{day: number, action: string, duration: number}]. The output should contain no other characters other than the JSON\n- The "action" field of the returned JSON represents the action they must take on a given day. It should be concise, clear, and relate directly to their habit goal.\n- For the duration of the habit building, there should be exactly one action per day.\n- Your response should contain no text other than the JSON array`,
+        content: `Task: Starting at day ${currentDay}, create the next 5 days of a strucured plan that helps someone build a habit of \n\nRequirements:\n- The plan should be optimized so that they do not feel burned out\n- After the last day of the plan, the habit should be deeply built into their life and feel effortless to maintain\nOutput:- Format the output as JSON with the format [{day: number, action: string, duration: number}]. The output should contain no other characters other than the JSON\n- The "action" field of the returned JSON represents the action they must take on a given day. It should be concise, clear, and relate directly to their habit goal.\n- For the duration of the habit building, there should be exactly one action per day.\n- Your response should contain no text other than the JSON array`,
       },
     ],
   });
