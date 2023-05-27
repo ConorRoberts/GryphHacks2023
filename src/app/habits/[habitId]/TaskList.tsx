@@ -4,10 +4,11 @@ import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import { Task } from "@prisma/client";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 
 const TaskList: FC<{ tasks: Task[] }> = (props) => {
   const [tasks, setTasks] = useState<Task[]>(props.tasks);
+  const todayTaskContainer = useRef<HTMLDivElement>(null);
   const todayTaskIdx = useMemo(() => {
     const d1 = dayjs().startOf("day").toDate();
     const d2 = dayjs().endOf("day").toDate();
@@ -46,6 +47,12 @@ const TaskList: FC<{ tasks: Task[] }> = (props) => {
     }
   };
 
+  useEffect(() => {
+    if (todayTaskContainer.current) {
+      todayTaskContainer.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, []);
+
   return (
     <div className="mx-auto max-w-xl w-full flex flex-col gap-16 divide divide-gray-100">
       {yesterday && (
@@ -55,7 +62,7 @@ const TaskList: FC<{ tasks: Task[] }> = (props) => {
         </div>
       )}
       {today && (
-        <div className="py-4 shadow border border-gray-100 rounded-xl px-2 flex flex-col">
+        <div className="flex flex-col" ref={todayTaskContainer}>
           <h3>Today</h3>
           <p className="font-bold text-4xl">{today.description}</p>
           <button
