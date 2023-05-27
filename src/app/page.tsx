@@ -5,6 +5,7 @@ import { Box } from "@mui/system";
 import Title from "../components/Title";
 import UserFlow from "../components/UserQuestions/UserFlow";
 import theme from "../context/theme";
+import Loader from "../components/UserQuestions/Loader";
 
 export default function Home() {
   useEffect(() => {
@@ -22,6 +23,7 @@ export default function Home() {
       <ThemeProvider theme={theme}>
         <Title />
         <UserFlow />
+        <Loader />
       </ThemeProvider>
     </main>
   );

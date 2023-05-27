@@ -11,28 +11,45 @@ import Question from "../../components/UserQuestions/Question";
 type GeneratedUserQuiz = Awaited<ReturnType<OpenAIApi["createCompletion"]>>;
 
 const UserFlow = () => {
+  // for fetching questions
   const [promptValue, setPromptValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState<GetCategoryQuestionsResponse["questions"]>([]);
   const [shouldBeginLongFetch, setShouldBeginLongFetch] = useState(false);
 
+  // for building user profile
+  const [questionValue, setQuestionValue] = useState("");
+  const [answerValue, setAnswerValue] = useState("");
+  const [profileObject, setProfileObject] = useState<{ answerValue: string; questionValue: string }[]>([]);
+
+  useEffect(() => {
+    setProfileObject((prevProfileObject) => {
+      const updatedProfileObject = [...prevProfileObject];
+
+      if (questionValue.length > 0) {
+        updatedProfileObject.push({
+          answerValue,
+          questionValue,
+        });
+      }
+
+      return updatedProfileObject;
+    });
+  }, [questionValue, answerValue]);
+
+  useEffect(() => {
+    console.log(profileObject);
+  }, [profileObject]);
+
+  // fetch questions
   const submitHabit = async () => {
     setLoading(true);
 
     try {
-      const prompt = `I want to build a habit of ${promptValue}`;
-      // const response = await axios.post<GeneratedUserQuiz>("/api/questions/generate-user-quiz/", {
-      //   params: {
-      //     prompt: prompt,
-      //   },
-      // });
-
-      const { data: category } = await axios.get("/api/public/categorize-input", { params: { input: prompt } });
+      const { data: category } = await axios.get("/api/public/categorize-input", { params: { input: promptValue } });
       const { data: questions } = await axios.get<GetCategoryQuestionsResponse>("/api/public/category-questions", {
         params: { category },
       });
-
-      // console.log(response.data.data);
 
       setQuestions(questions.questions);
       setLoading(false);
@@ -60,6 +77,20 @@ const UserFlow = () => {
     })();
   }, [shouldBeginLongFetch]);
 
+  const renderQuestions = () => {
+    if (questions) {
+      return questions.map((question, index) => (
+        <Question
+          key={index}
+          question={question.prompt}
+          options={question.options}
+          setAnswerValue={setAnswerValue}
+          setQuestionValue={setQuestionValue}
+        />
+      ));
+    }
+  };
+
   return (
     <>
       <MainSearch
@@ -70,9 +101,7 @@ const UserFlow = () => {
       />
       <Medium />
 
-      {questions?.map((question, index) => (
-        <Question key={index} question={question.prompt} options={question.options} />
-      ))}
+      {renderQuestions()}
     </>
   );
 };
