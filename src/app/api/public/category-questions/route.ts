@@ -8,16 +8,16 @@ export type GetCategoryQuestionsResponse = { questions: (Question & { followUpQu
 export const GET = async (request: Request) => {
   const { searchParams } = new URL(request.url);
 
-  const categoryName = z.string().safeParse(searchParams.get("category"));
+  const prompt = z.string().safeParse(searchParams.get("prompt"));
 
-  if (!categoryName.success) {
+  if (!prompt.success) {
     return NextResponse.json({ message: "Category name invalid" }, { status: 400 });
   }
 
   const questions = await prisma.question.findMany({
     where: {
       category: {
-        name: categoryName.data,
+        name: prompt.data,
       },
     },
     include: {
