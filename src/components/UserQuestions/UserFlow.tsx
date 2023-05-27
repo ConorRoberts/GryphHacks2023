@@ -2,7 +2,7 @@
 import axios from "axios";
 import type { OpenAIApi } from "openai";
 import { useEffect, useState } from "react";
-import { GetCategoryQuestionsResponse } from "~/src/app/api/questions/category-questions/route";
+import { GetCategoryQuestionsResponse } from "~/src/app/api/public/category-questions/route";
 import { scrollDown } from "~/src/utils/helper";
 import MainSearch from "../../components/UserQuestions/MainSearch";
 import Medium from "../../components/UserQuestions/Medium";
@@ -27,7 +27,10 @@ const UserFlow = () => {
       //   },
       // });
 
-      const { data: questions } = await axios.get<GetCategoryQuestionsResponse>("/api/category-questions");
+      const { data: category } = await axios.get("/api/public/categorize-input", { params: { input: prompt } });
+      const { data: questions } = await axios.get<GetCategoryQuestionsResponse>("/api/public/category-questions", {
+        params: { category },
+      });
 
       // console.log(response.data.data);
 
