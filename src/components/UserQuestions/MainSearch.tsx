@@ -3,10 +3,29 @@ import HandymanTwoToneIcon from "@mui/icons-material/HandymanTwoTone";
 import { Box, IconButton, Input, Tooltip, Typography, useTheme } from "@mui/material";
 import React, { useState } from "react";
 import { scrollDown } from "../../utils/helper";
+import axios from "axios";
+import type { OpenAIApi } from "openai";
+
+type GeneratedUserQuiz = Awaited<ReturnType<OpenAIApi["createCompletion"]>>;
 
 const MainSearch: React.FC = () => {
   const theme = useTheme();
   const [promptValue, setPromptValue] = useState("");
+
+  const submitHabit = async () => {
+    try {
+      const prompt = `I want to build a habit of ${promptValue}`;
+      const response = await axios.post<GeneratedUserQuiz>("/api/questions/generate-user-quiz/", {
+        params: {
+          prompt: prompt,
+        },
+      });
+
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Box>
@@ -65,7 +84,7 @@ const MainSearch: React.FC = () => {
               }}
             />
             <Tooltip title="Generate Plan" placement="top">
-              <IconButton aria-label="enter" size="large" onClick={() => promptValue && scrollDown()}>
+              <IconButton aria-label="enter" size="large" onClick={() => promptValue && submitHabit()}>
                 <HandymanTwoToneIcon sx={{ fontSize: 29 }} />
               </IconButton>
             </Tooltip>
