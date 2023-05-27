@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { styled } from "@mui/system";
-import { Box, Typography, Button, Input, IconButton, useTheme } from "@mui/material";
+import { Box, Typography, Button, Input, IconButton, useTheme, Tooltip } from "@mui/material";
 import SubdirectoryArrowLeftIcon from "@mui/icons-material/SubdirectoryArrowLeft";
 import { scrollDown } from "../../utils/helper";
 
@@ -20,11 +20,16 @@ const CustomOptionButton = styled(Button)(({ theme }) => ({
   justifyContent: "flex-start",
 }));
 
-const Question = ({ question, options }) => {
-  const [inputValue, setInputValue] = useState("");
+const Question = ({ question, options, setAnswerValue, setQuestionValue }) => {
   const theme = useTheme();
+  const [tempTextFieldInputVal, setTempTextFieldInputVal] = useState("");
 
-  console.log(options);
+  const getQuestionAndAnswer = (value) => {
+    setAnswerValue(value);
+    setQuestionValue(question);
+
+    scrollDown();
+  };
 
   const renderOptions = (options) => {
     if (options[0] === "input required" || options === "input required") {
@@ -50,26 +55,36 @@ const Question = ({ question, options }) => {
             }}
             placeholder="Your resposne"
             autoComplete="off"
-            value={inputValue}
+            value={tempTextFieldInputVal}
             onChange={(event) => {
-              setInputValue(event.target.value);
+              setTempTextFieldInputVal(event.target.value);
             }}
             onKeyDown={(event) => {
-              if (event.key === "Enter" && inputValue) {
+              if (event.key === "Enter") {
                 scrollDown();
-                // would need to store the input some place
-                setInputValue(""); // and clear state
+                setAnswerValue(tempTextFieldInputVal);
               }
             }}
           />
-          <IconButton aria-label="enter" size="large" onClick={scrollDown}>
+          <Tooltip title="press enter" placement="top">
+            <SubdirectoryArrowLeftIcon sx={{ fontSize: 29 }} color="primary" />
+          </Tooltip>
+
+          {/* <IconButton aria-label="enter" size="large" onClick={something}>
             <SubdirectoryArrowLeftIcon sx={{ fontSize: 29 }} />
-          </IconButton>
+          </IconButton> */}
         </Box>
       );
     } else if (Array.isArray(options)) {
       return options.map((option, index) => (
-        <CustomOptionButton key={index} variant="text" size="large" onClick={scrollDown}>
+        <CustomOptionButton
+          key={index}
+          variant="text"
+          size="large"
+          onClick={() => {
+            getQuestionAndAnswer(option);
+          }}
+        >
           <Typography variant="h5" component="h5" sx={{ fontSize: { xs: 19, sm: 23, md: 25, lg: 25 } }}>
             {option}
           </Typography>

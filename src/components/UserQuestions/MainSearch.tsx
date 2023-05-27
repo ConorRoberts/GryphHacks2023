@@ -2,7 +2,6 @@
 import HandymanTwoToneIcon from "@mui/icons-material/HandymanTwoTone";
 import { Box, IconButton, Input, Tooltip, Typography, useTheme, CircularProgress } from "@mui/material";
 import React, { useState } from "react";
-import { scrollDown } from "../../utils/helper";
 
 const MainSearch: React.FC = ({ loading, promptValue, setPromptValue, submitHabit }) => {
   const theme = useTheme();
@@ -21,7 +20,7 @@ const MainSearch: React.FC = ({ loading, promptValue, setPromptValue, submitHabi
       >
         <Typography
           variant="h2"
-          component="h1"
+          component="h2"
           color="primary"
           sx={{
             mr: 2,
@@ -69,7 +68,7 @@ const MainSearch: React.FC = ({ loading, promptValue, setPromptValue, submitHabi
             />
             <Tooltip title={!loading ? "Generate Plan" : "Generating... be patient"} placement="top">
               <IconButton aria-label="enter" size="large" onClick={() => promptValue && submitHabit()}>
-                {!loading ? <HandymanTwoToneIcon sx={{ fontSize: 29 }} /> : <CircularProgress />}
+                {!loading ? <HandymanTwoToneIcon sx={{ fontSize: 29 }} /> : <CircularProgress sx={{ fontSize: 29 }} />}
               </IconButton>
             </Tooltip>
           </form>

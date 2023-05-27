@@ -6,7 +6,7 @@ import Navigation from "./Navigation";
 import "./globals.css";
 
 export const metadata = {
-  title: "HabitMaker",
+  title: "Habit Step",
   description: "Make habits with the power of AI",
 };
 
