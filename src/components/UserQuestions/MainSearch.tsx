@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Box, IconButton, Typography, Tooltip, Input, useTheme } from "@mui/material";
 import HandymanTwoToneIcon from "@mui/icons-material/HandymanTwoTone";
+import { scrollDown } from "../../utils/helper";
 
 const MainSearch: React.FC = () => {
     const theme = useTheme();
@@ -62,7 +63,7 @@ const MainSearch: React.FC = () => {
                         }}
                     />
                     <Tooltip title="Generate Plan" placement="top">
-                        <IconButton aria-label="enter" size="large">
+                        <IconButton aria-label="enter" size="large" onClick={promptValue && scrollDown}>
                             <HandymanTwoToneIcon sx={{ fontSize: 29 }} />
                         </IconButton>
                     </Tooltip>
