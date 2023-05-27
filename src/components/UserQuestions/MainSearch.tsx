@@ -31,7 +31,7 @@ const MainSearch: FC<{
       >
         <Typography
           variant="h2"
-          component="h1"
+          component="h2"
           color="primary"
           sx={{
             mr: 2,

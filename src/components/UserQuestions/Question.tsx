@@ -1,5 +1,5 @@
 import SubdirectoryArrowLeftIcon from "@mui/icons-material/SubdirectoryArrowLeft";
-import { Box, Button, IconButton, Input, Typography, useTheme } from "@mui/material";
+import { Box, Button, IconButton, Input, Typography, useTheme, Tooltip } from "@mui/material";
 import { styled } from "@mui/system";
 import { FC, useState } from "react";
 import { scrollDown } from "../../utils/helper";
@@ -20,12 +20,24 @@ const CustomOptionButton = styled(Button)(({ theme }) => ({
   justifyContent: "flex-start",
 }));
 
-const OptionsList: FC<{ setInputValue: (str: string) => void; options: string[] | string; inputValue: string }> = ({
-  options,
-  setInputValue,
-  inputValue,
-}) => {
+interface OptionsListProps {
+  options: string[] | string;
+  question: string;
+  setAnswerValue: (str: string) => void;
+  setQuestionValue: (str: string) => void;
+}
+
+const OptionsList: FC<OptionsListProps> = ({ options, question, setAnswerValue, setQuestionValue }) => {
   const theme = useTheme();
+  const [tempTextFieldInputVal, setTempTextFieldInputVal] = useState("");
+
+  const getQuestionAndAnswer = (value) => {
+    setAnswerValue(value);
+    setQuestionValue(question);
+
+    scrollDown();
+  };
+
   if (options[0] === "input required" || options === "input required") {
     return (
       <Box>
@@ -47,30 +59,36 @@ const OptionsList: FC<{ setInputValue: (str: string) => void; options: string[] 
               width: { xs: "100%", lg: 520 },
             },
           }}
-          placeholder="Your resposne"
+          placeholder="Your response"
           autoComplete="off"
-          value={inputValue}
+          value={tempTextFieldInputVal}
           onChange={(event) => {
-            setInputValue(event.target.value);
+            setTempTextFieldInputVal(event.target.value);
           }}
           onKeyDown={(event) => {
-            if (event.key === "Enter" && inputValue) {
+            if (event.key === "Enter") {
               scrollDown();
-              // would need to store the input some place
-              setInputValue(""); // and clear state
+              setAnswerValue(tempTextFieldInputVal);
             }
           }}
         />
-        <IconButton aria-label="enter" size="large" onClick={scrollDown}>
-          <SubdirectoryArrowLeftIcon sx={{ fontSize: 29 }} />
-        </IconButton>
+        <Tooltip title="Press Enter" placement="top">
+          <SubdirectoryArrowLeftIcon sx={{ fontSize: 29 }} color="primary" />
+        </Tooltip>
       </Box>
     );
   } else if (Array.isArray(options)) {
     return (
       <>
         {options.map((option, index) => (
-          <CustomOptionButton key={index} variant="text" size="large" onClick={scrollDown}>
+          <CustomOptionButton
+            key={index}
+            variant="text"
+            size="large"
+            onClick={() => {
+              getQuestionAndAnswer(option);
+            }}
+          >
             <Typography variant="h5" component="h5" sx={{ fontSize: { xs: 19, sm: 23, md: 25, lg: 25 } }}>
               {option}
             </Typography>
@@ -78,16 +96,87 @@ const OptionsList: FC<{ setInputValue: (str: string) => void; options: string[] 
         ))}
       </>
     );
+  } else {
+    // handle other cases in case idk
+    return null;
   }
-
-  return null;
 };
 
-const Question: FC<{ question: string; options: string[] | string }> = ({ question, options }) => {
-  const [inputValue, setInputValue] = useState("");
-  const theme = useTheme();
+interface QuestionProps {
+  question: string;
+  options: string[];
+  setAnswerValue: (value: string) => void;
+  setQuestionValue: (value: string) => void;
+}
 
-  console.log(options);
+const Question: React.FC<QuestionProps> = ({ question, options, setAnswerValue, setQuestionValue }) => {
+  const theme = useTheme();
+  const [tempTextFieldInputVal, setTempTextFieldInputVal] = useState("");
+
+  const renderOptions = (options) => {
+    if (options[0] === "input required" || options === "input required") {
+      return (
+        <Box>
+          <Input
+            sx={{
+              "& .MuiInput-underline:before": {
+                borderBottomColor: theme.palette.primary.main,
+              },
+              "&:focus-within .MuiInput-underline:before": {
+                borderBottomColor: theme.palette.primary.main,
+              },
+              "& .MuiInput-underline:after": {
+                borderBottomColor: theme.palette.primary.main,
+              },
+              "& .MuiInputBase-input": {
+                color: "#000",
+                paddingBottom: 0,
+                fontSize: { xs: 19, sm: 23, md: 25, lg: 25 },
+                width: { xs: "100%", lg: 520 },
+              },
+            }}
+            placeholder="Your resposne"
+            autoComplete="off"
+            value={tempTextFieldInputVal}
+            onChange={(event) => {
+              setTempTextFieldInputVal(event.target.value);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                scrollDown();
+                setAnswerValue(tempTextFieldInputVal);
+              }
+            }}
+          />
+          <Tooltip title="press enter" placement="top">
+            <SubdirectoryArrowLeftIcon sx={{ fontSize: 29 }} color="primary" />
+          </Tooltip>
+
+          {/* <IconButton aria-label="enter" size="large" onClick={something}>
+            <SubdirectoryArrowLeftIcon sx={{ fontSize: 29 }} />
+          </IconButton> */}
+        </Box>
+      );
+    } else if (Array.isArray(options)) {
+      return options.map((option, index) => (
+        <CustomOptionButton
+          key={index}
+          variant="text"
+          size="large"
+          onClick={() => {
+            getQuestionAndAnswer(option);
+          }}
+        >
+          <Typography variant="h5" component="h5" sx={{ fontSize: { xs: 19, sm: 23, md: 25, lg: 25 } }}>
+            {option}
+          </Typography>
+        </CustomOptionButton>
+      ));
+    } else {
+      // handle other cases in case idk
+      return null;
+    }
+  };
 
   return (
     <>
@@ -115,7 +204,12 @@ const Question: FC<{ question: string; options: string[] | string }> = ({ questi
           </Typography>
 
           {/* QUESTIONS */}
-          <OptionsList options={options} setInputValue={setInputValue} inputValue={inputValue} />
+          <OptionsList
+            options={options}
+            question={question}
+            setAnswerValue={setAnswerValue}
+            setQuestionValue={setQuestionValue}
+          />
         </Box>
       </Box>
     </>
