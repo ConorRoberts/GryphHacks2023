@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { styled } from "@mui/system";
-import { Box, Typography, Button, Input, IconButton, useTheme } from "@mui/material";
 import SubdirectoryArrowLeftIcon from "@mui/icons-material/SubdirectoryArrowLeft";
+import { Box, Button, IconButton, Input, Typography, useTheme } from "@mui/material";
+import { styled } from "@mui/system";
+import { FC, useState } from "react";
 import { scrollDown } from "../../utils/helper";
 
 const CustomOptionButton = styled(Button)(({ theme }) => ({
@@ -20,13 +20,13 @@ const CustomOptionButton = styled(Button)(({ theme }) => ({
   justifyContent: "flex-start",
 }));
 
-const Question = ({ question, options }) => {
+const Question: FC<{ question: string; options: string[] | string }> = ({ question, options }) => {
   const [inputValue, setInputValue] = useState("");
   const theme = useTheme();
 
   console.log(options);
 
-  const renderOptions = (options) => {
+  const renderOptions = (options: typeof options) => {
     if (options[0] === "input required" || options === "input required") {
       return (
         <Box>
