@@ -2,6 +2,7 @@
 import axios from "axios";
 import type { OpenAIApi } from "openai";
 import { useEffect, useState } from "react";
+import { GetInputCategoryResponse } from "~/src/app/api/public/categorize-input/route";
 import { GetCategoryQuestionsResponse } from "~/src/app/api/public/category-questions/route";
 import { scrollDown } from "~/src/utils/helper";
 import MainSearch from "../../components/UserQuestions/MainSearch";
@@ -46,9 +47,11 @@ const UserFlow = () => {
     setLoading(true);
 
     try {
-      const { data: category } = await axios.get("/api/public/categorize-input", { params: { input: promptValue } });
+      const { data: category } = await axios.get<GetInputCategoryResponse>("/api/public/categorize-input", {
+        params: { input: promptValue },
+      });
       const { data: questions } = await axios.get<GetCategoryQuestionsResponse>("/api/public/category-questions", {
-        params: { category },
+        params: { category: category.category },
       });
 
       setQuestions(questions.questions);

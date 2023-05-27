@@ -19,7 +19,6 @@ export const GET = async () => {
       name: "dietary",
     },
   });
-  await prisma.question.deleteMany();
 
   if (!category) {
     return;

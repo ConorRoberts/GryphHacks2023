@@ -10,6 +10,8 @@ type CategorizationResult = {
   scores: number[];
 };
 
+export type GetInputCategoryResponse = { category: string };
+
 const categorize = async (inputs: string, categories: string[]) => {
   const response = await fetch("https://api-inference.huggingface.co/models/facebook/bart-large-mnli", {
     headers: { Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}` },
