@@ -8,7 +8,13 @@ const Navigation = () => {
   return (
     <>
       <div className="sm:flex justify-between p-2 border-b border-gray-100 backdrop-blur bg-white/70 sticky top-0 left-0 right-0 items-center hidden">
-        <div>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/"
+            className="rounded hover:bg-gray-50 transition duration-75 px-3 py-0.5 font-medium text-sm flex items-center justify-center"
+          >
+            <p>Home</p>
+          </Link>
           {userId && (
             <Link
               href="/habits"
