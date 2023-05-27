@@ -2,9 +2,9 @@
 import React, { useState } from "react";
 import { Box, Typography, Input, useTheme } from "@mui/material";
 
-const MainSearch = () => {
+const MainSearch: React.FC = () => {
     const theme = useTheme();
-    const [propmtValue, setPromptValue] = useState();
+    const [promptValue, setPromptValue] = useState<string | undefined>();
 
     return (
         <Box sx={{ mt: 10 }}>
@@ -21,16 +21,16 @@ const MainSearch = () => {
                 <Input
                     sx={{
                         "& .MuiInput-underline:before": {
-                            borderBottomColor: theme.palette.primary,
+                            borderBottomColor: theme.palette.primary.main,
                         },
                         "&:focus-within .MuiInput-underline:before": {
-                            borderBottomColor: theme.palette.primary,
+                            borderBottomColor: theme.palette.primary.main,
                         },
                         "& .MuiInput-underline:after": {
-                            borderBottomColor: theme.palette.primary,
+                            borderBottomColor: theme.palette.primary.main,
                         },
                         "& .MuiInputBase-input": {
-                            color: theme.palette.primary,
+                            color: theme.palette.primary.main,
                             paddingBottom: 0,
                             fontSize: 23,
                             width: 350,
@@ -43,7 +43,7 @@ const MainSearch = () => {
                     hiddenLabel
                     id="prompt"
                     variant="outlined"
-                    value={propmtValue}
+                    value={promptValue}
                     onChange={(event) => {
                         setPromptValue(event.target.value);
                     }}

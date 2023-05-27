@@ -1,9 +1,14 @@
-import MainSearch from "@/components/MainSearch";
+"use client";
+import MainSearch from "../components/MainSearch";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "../context/theme";
 
 export default function Home() {
     return (
         <main>
-            <MainSearch />
+            <ThemeProvider theme={theme}>
+                <MainSearch />
+            </ThemeProvider>
         </main>
     );
 }
