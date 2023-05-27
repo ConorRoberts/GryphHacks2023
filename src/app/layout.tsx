@@ -17,7 +17,7 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
     <ClerkProvider>
       <html lang="en">
         <body>
-          <div className={clsx(inter.className, "min-h-screen")}>
+          <div className={clsx(inter.className, "min-h-screen relative")}>
             <Navigation />
             <div className="flex-1 flex flex-col">{children}</div>
           </div>
