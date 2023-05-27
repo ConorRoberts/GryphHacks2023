@@ -10,13 +10,16 @@ datasource db {
 
 model Task {
   id          Int      @id @default(autoincrement())
-  date        DateTime @default(now())
+  startTime   DateTime @default(now())
   description String
+  isComplete  Boolean  @default(false)
+  duration    Int
 }
 
 model Habit {
-  id   Int    @id @default(autoincrement())
-  name String
+  id        Int      @id @default(autoincrement())
+  name      String
+  timeframe DateTime
 }
 
 model HabitConstraint {
