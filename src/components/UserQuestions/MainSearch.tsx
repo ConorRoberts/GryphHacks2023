@@ -1,31 +1,11 @@
 "use client";
 import HandymanTwoToneIcon from "@mui/icons-material/HandymanTwoTone";
-import { Box, IconButton, Input, Tooltip, Typography, useTheme } from "@mui/material";
+import { Box, IconButton, Input, Tooltip, Typography, useTheme, CircularProgress } from "@mui/material";
 import React, { useState } from "react";
 import { scrollDown } from "../../utils/helper";
-import axios from "axios";
-import type { OpenAIApi } from "openai";
 
-type GeneratedUserQuiz = Awaited<ReturnType<OpenAIApi["createCompletion"]>>;
-
-const MainSearch: React.FC = () => {
+const MainSearch: React.FC = ({ loading, promptValue, setPromptValue, submitHabit }) => {
   const theme = useTheme();
-  const [promptValue, setPromptValue] = useState("");
-
-  const submitHabit = async () => {
-    try {
-      const prompt = `I want to build a habit of ${promptValue}`;
-      const response = await axios.post<GeneratedUserQuiz>("/api/questions/generate-user-quiz/", {
-        params: {
-          prompt: prompt,
-        },
-      });
-
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <Box>
@@ -70,7 +50,7 @@ const MainSearch: React.FC = () => {
                   borderBottomColor: theme.palette.primary.main,
                 },
                 "& .MuiInputBase-input": {
-                  color: theme.palette.primary.main,
+                  color: "#000",
                   paddingBottom: 0,
                   fontSize: { xs: 26, sm: 30, md: 33, lg: 35 },
                   width: { xs: 350, md: 470, lg: 450 },
@@ -83,9 +63,9 @@ const MainSearch: React.FC = () => {
                 setPromptValue(event.target.value);
               }}
             />
-            <Tooltip title="Generate Plan" placement="top">
+            <Tooltip title={!loading ? "Generate Plan" : "Generating... be patient"} placement="top">
               <IconButton aria-label="enter" size="large" onClick={() => promptValue && submitHabit()}>
-                <HandymanTwoToneIcon sx={{ fontSize: 29 }} />
+                {!loading ? <HandymanTwoToneIcon sx={{ fontSize: 29 }} /> : <CircularProgress />}
               </IconButton>
             </Tooltip>
           </form>
