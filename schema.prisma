@@ -41,3 +41,9 @@ model HabitConstraint {
 
   @@index(habitId)
 }
+
+model HabitCategory {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  tier Int
+}
