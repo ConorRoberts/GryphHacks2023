@@ -38,7 +38,7 @@ const Navigation = () => {
             <QueueListIcon className="w-8 h-8 text-gray-600 hover:text-gray-700 transition duration-75" />
           </Link>
         )}
-        <UserButton afterSignOutUrl="/" />
+        {userId && <UserButton afterSignOutUrl="/" />}
       </div>
     </>
   );
