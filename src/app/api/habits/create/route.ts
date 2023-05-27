@@ -1,11 +1,11 @@
 import { auth } from "@clerk/nextjs";
 import { Habit, Task } from "@prisma/client";
+import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 import { ZodError, z } from "zod";
 import { getOpenAiClient } from "~/src/utils/getOpenAiClient";
 import { habitTaskSchema } from "~/src/utils/habitTaskSchema";
 import { prisma } from "~/src/utils/prisma";
-import dayjs from "dayjs";
 
 const generatedTaskSchema = habitTaskSchema.omit({ id: true });
 
@@ -38,44 +38,46 @@ export const GET = async (request: Request) => {
     ],
   });
 
-  const content = completion.data.choices[0].message?.content;
+  // Loop through the choices until one doesn't throw an error
+  for (const choice of completion.data.choices) {
+    try {
+      const content = choice.message?.content;
 
-  try {
-    if (content) {
-      const parsedContent = JSON.parse(content);
-      const validatedContent = generatedTaskSchema.array().parse(parsedContent);
+      if (content) {
+        const parsedContent = JSON.parse(content);
+        const validatedContent = generatedTaskSchema.array().parse(parsedContent);
 
-      const tasks: Omit<Task, "habitId" | "id">[] = validatedContent.map((t) => ({
-        description: t.action,
-        isComplete: false,
-        duration: t.duration,
-        startTime: dayjs().add(t.day, "days").toDate(),
-        userId,
-      }));
-
-      const newHabit = await prisma.habit.create({
-        data: {
+        const tasks: Omit<Task, "habitId" | "id">[] = validatedContent.map((t) => ({
+          description: t.action,
+          isComplete: false,
+          duration: t.duration,
+          startTime: dayjs().add(t.day, "days").toDate(),
           userId,
-          name: desiredHabit.data,
-          timeframe: new Date(),
-          tasks: {
-            createMany: { data: tasks },
-          },
-        },
-      });
+        }));
 
-      return NextResponse.json({ habit: newHabit });
-    }
-  } catch (e) {
-    if (e instanceof ZodError) {
-      return NextResponse.json(
-        { message: `Text generation did not match expected schema: ${e.message}` },
-        { status: 500 }
-      );
-    } else if (e instanceof Error) {
-      return NextResponse.json({ message: `Unexpected error: ${e.message}` }, { status: 500 });
+        const newHabit = await prisma.habit.create({
+          data: {
+            userId,
+            name: desiredHabit.data,
+            timeframe: new Date(),
+            tasks: {
+              createMany: { data: tasks },
+            },
+          },
+        });
+
+        return NextResponse.json({ habit: newHabit });
+      }
+    } catch (e) {
+      if (e instanceof ZodError) {
+        console.error(`Text generation did not match expected schema: ${e.message}`);
+      } else if (e instanceof Error) {
+        console.error(`Unexpected error: ${e.message}`);
+      } else {
+        console.error("Unknown error");
+      }
     }
   }
 
-  return NextResponse.json({ message: "Text generation came back empty" }, { status: 500 });
+  return NextResponse.json({ message: "No valid completion choice" }, { status: 500 });
 };
