@@ -7,15 +7,23 @@ const MainSearch: React.FC = () => {
     const [promptValue, setPromptValue] = useState<string | undefined>();
 
     return (
-        <Box sx={{ mt: 10 }}>
+        <Box>
             <Box
                 sx={{
+                    flexDirection: { xs: "column", lg: "row" },
+                    height: "100vh",
                     display: "flex",
                     justifyContent: "center",
-                    alignItems: "flex-end",
+                    alignItems: "center",
+                    pb: 7,
                 }}
             >
-                <Typography variant="h2" component="h1" color="primary" sx={{ mr: 2, mb: 0.3 }}>
+                <Typography
+                    variant="h2"
+                    component="h1"
+                    color="primary"
+                    sx={{ mr: 2, mb: { xs: 4, lg: 0.3 }, fontSize: { xs: 26, sm: 30, md: 33, lg: 35 } }}
+                >
                     I want to build a habit of...
                 </Typography>
                 <Input
@@ -32,8 +40,8 @@ const MainSearch: React.FC = () => {
                         "& .MuiInputBase-input": {
                             color: theme.palette.primary.main,
                             paddingBottom: 0,
-                            fontSize: 23,
-                            width: 350,
+                            fontSize: { xs: 26, sm: 30, md: 33, lg: 35 },
+                            width: { xs: 350, md: 470, lg: 450 },
                         },
                     }}
                     placeholder="eating healthier"
