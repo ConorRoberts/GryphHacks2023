@@ -1,34 +1,39 @@
 "use client";
-import React, { useState } from "react";
+import axios from "axios";
+import type { OpenAIApi } from "openai";
+import { useEffect, useState } from "react";
+import { GetCategoryQuestionsResponse } from "~/src/app/api/questions/category-questions/route";
+import { scrollDown } from "~/src/utils/helper";
 import MainSearch from "../../components/UserQuestions/MainSearch";
 import Medium from "../../components/UserQuestions/Medium";
 import Question from "../../components/UserQuestions/Question";
-import axios from "axios";
-import type { OpenAIApi } from "openai";
-import { scrollDown } from "~/src/utils/helper";
 
 type GeneratedUserQuiz = Awaited<ReturnType<OpenAIApi["createCompletion"]>>;
 
 const UserFlow = () => {
   const [promptValue, setPromptValue] = useState("");
   const [loading, setLoading] = useState(false);
-  const [questions, setQuestions] = useState(null);
+  const [questions, setQuestions] = useState<GetCategoryQuestionsResponse["questions"]>([]);
+  const [shouldBeginLongFetch, setShouldBeginLongFetch] = useState(false);
 
   const submitHabit = async () => {
     setLoading(true);
 
     try {
       const prompt = `I want to build a habit of ${promptValue}`;
-      const response = await axios.post<GeneratedUserQuiz>("/api/questions/generate-user-quiz/", {
-        params: {
-          prompt: prompt,
-        },
-      });
+      // const response = await axios.post<GeneratedUserQuiz>("/api/questions/generate-user-quiz/", {
+      //   params: {
+      //     prompt: prompt,
+      //   },
+      // });
+
+      const { data: questions } = await axios.get<GetCategoryQuestionsResponse>("/api/category-questions");
 
       // console.log(response.data.data);
 
-      setQuestions(response.data.data);
+      setQuestions(questions.questions);
       setLoading(false);
+      setShouldBeginLongFetch(true);
       scrollDown();
     } catch (error) {
       setLoading(false);
@@ -36,13 +41,21 @@ const UserFlow = () => {
     }
   };
 
-  const renderQuestions = () => {
-    if (questions) {
-      return questions.map((question, index) => (
-        <Question key={index} question={question.question} options={question.options} />
-      ));
-    }
-  };
+  useEffect(() => {
+    (async () => {
+      if (shouldBeginLongFetch) {
+        const { data } = await axios.post<GeneratedUserQuiz>("/api/questions/generate-user-quiz/", {
+          params: {
+            prompt: prompt,
+          },
+        });
+
+        // TODO concatenate with questions list
+
+        setShouldBeginLongFetch(false);
+      }
+    })();
+  }, [shouldBeginLongFetch]);
 
   return (
     <>
@@ -54,7 +67,9 @@ const UserFlow = () => {
       />
       <Medium />
 
-      {renderQuestions()}
+      {questions?.map((question, index) => (
+        <Question key={index} question={question.prompt} options={question.options} />
+      ))}
     </>
   );
 };
