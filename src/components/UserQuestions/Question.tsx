@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/system";
 import { Box, Typography, Button, Input, IconButton, useTheme } from "@mui/material";
 import SubdirectoryArrowLeftIcon from "@mui/icons-material/SubdirectoryArrowLeft";
@@ -21,6 +21,7 @@ const CustomOptionButton = styled(Button)(({ theme }) => ({
 }));
 
 const Question = ({ question, options }) => {
+  const [inputValue, setInputValue] = useState("");
   const theme = useTheme();
 
   console.log(options);
@@ -49,10 +50,17 @@ const Question = ({ question, options }) => {
             }}
             placeholder="Your resposne"
             autoComplete="off"
-            //   value={promptValue}
-            //   onChange={(event) => {
-            //     setPromptValue(event.target.value);
-            //   }}
+            value={inputValue}
+            onChange={(event) => {
+              setInputValue(event.target.value);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && inputValue) {
+                scrollDown();
+                // would need to store the input some place
+                setInputValue(""); // and clear state
+              }
+            }}
           />
           <IconButton aria-label="enter" size="large" onClick={scrollDown}>
             <SubdirectoryArrowLeftIcon sx={{ fontSize: 29 }} />

@@ -35,7 +35,6 @@ const MainSearch: React.FC = ({ loading, promptValue, setPromptValue, submitHabi
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              scrollDown();
             }}
           >
             <Input
@@ -61,6 +60,11 @@ const MainSearch: React.FC = ({ loading, promptValue, setPromptValue, submitHabi
               value={promptValue}
               onChange={(event) => {
                 setPromptValue(event.target.value);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && promptValue) {
+                  submitHabit();
+                }
               }}
             />
             <Tooltip title={!loading ? "Generate Plan" : "Generating... be patient"} placement="top">
