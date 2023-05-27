@@ -10,13 +10,16 @@ const theme = createTheme({
         },
     },
     typography: {
-        fontFamily: "Roboto, Arial, sans-serif",
+        fontFamily: "Rubik, Arial, sans-serif",
         fontSize: 14,
         fontWeightRegular: 400,
         fontWeightMedium: 500,
         fontWeightBold: 700,
         h2: {
             fontSize: 35,
+        },
+        h6: {
+            fontSize: 20,
         },
     },
 });

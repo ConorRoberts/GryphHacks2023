@@ -1,9 +1,6 @@
 import { ClerkProvider, UserButton } from "@clerk/nextjs";
-import { Inter } from "next/font/google";
 import { FC, PropsWithChildren } from "react";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
     title: "HabitMaker",
@@ -14,7 +11,7 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
     return (
         <ClerkProvider>
             <html lang="en">
-                <body className={inter.className}>
+                <body>
                     <div className="min-h-screen">
                         <div className="flex justify-end p-2">
                             <UserButton afterSignOutUrl="/" />
