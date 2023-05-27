@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  startTime   DateTime @default(now())
+  description String
+  isComplete  Boolean  @default(false)
+  duration    Int
+  userId      String
+
+  habit   Habit @relation(fields: [habitId], references: [id])
+  habitId Int
+
+  @@index(habitId)
+}
+
+model Habit {
+  id          Int               @id @default(autoincrement())
+  name        String
+  timeframe   DateTime
+  userId      String
+  constraints HabitConstraint[]
+  tasks       Task[]
+}
+
+model HabitConstraint {
+  id      Int    @id @default(autoincrement())
+  prompt  String
+  value   String
+  userId  String
+  habit   Habit  @relation(fields: [habitId], references: [id])
+  habitId Int
+
+  @@index(habitId)
+}
