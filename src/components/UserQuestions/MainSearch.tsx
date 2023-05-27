@@ -1,11 +1,21 @@
 "use client";
 import HandymanTwoToneIcon from "@mui/icons-material/HandymanTwoTone";
-import { Box, IconButton, Input, Tooltip, Typography, useTheme, CircularProgress } from "@mui/material";
-import React, { useState } from "react";
-import { scrollDown } from "../../utils/helper";
+import { Box, CircularProgress, IconButton, Input, Tooltip, Typography, useTheme } from "@mui/material";
+import { FC } from "react";
 
-const MainSearch: React.FC = ({ loading, promptValue, setPromptValue, submitHabit }) => {
+const MainSearch: FC<{
+  loading: boolean;
+  promptValue: string;
+  setPromptValue: (v: string) => void;
+  submitHabit: () => void;
+}> = ({ loading, promptValue, setPromptValue, submitHabit }) => {
   const theme = useTheme();
+
+  const handleSubmit = () => {
+    if (promptValue) {
+      submitHabit();
+    }
+  };
 
   return (
     <Box>
@@ -35,6 +45,7 @@ const MainSearch: React.FC = ({ loading, promptValue, setPromptValue, submitHabi
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              handleSubmit();
             }}
           >
             <Input
@@ -68,7 +79,7 @@ const MainSearch: React.FC = ({ loading, promptValue, setPromptValue, submitHabi
               }}
             />
             <Tooltip title={!loading ? "Generate Plan" : "Generating... be patient"} placement="top">
-              <IconButton aria-label="enter" size="large" onClick={() => promptValue && submitHabit()}>
+              <IconButton aria-label="enter" size="large" onClick={() => handleSubmit()}>
                 {!loading ? <HandymanTwoToneIcon sx={{ fontSize: 29 }} /> : <CircularProgress />}
               </IconButton>
             </Tooltip>
