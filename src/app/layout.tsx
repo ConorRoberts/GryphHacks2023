@@ -14,16 +14,16 @@ const inter = Inter({ weight: ["100", "200", "300", "400", "500", "600", "700", 
 
 const Layout: FC<PropsWithChildren> = ({ children }) => {
   return (
-    <ClerkProvider>
-      <html lang="en">
+    <html lang="en">
+      <ClerkProvider>
         <body>
-          <div className={clsx(inter.className, "min-h-screen relative")}>
+          <div className={clsx(inter.className, "min-h-screen relative flex flex-col")}>
             <Navigation />
             <div className="flex-1 flex flex-col">{children}</div>
           </div>
         </body>
-      </html>
-    </ClerkProvider>
+      </ClerkProvider>
+    </html>
   );
 };
 
