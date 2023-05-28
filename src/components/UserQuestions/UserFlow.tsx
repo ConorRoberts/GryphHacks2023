@@ -83,6 +83,7 @@ const UserFlow = () => {
         params: { category: category.category },
       });
 
+      setQuestions(questions.questions);
       setLoading(false);
       setShouldBeginLongFetch(true);
       scrollDown();
