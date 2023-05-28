@@ -21,6 +21,7 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void; habitLoading: boolea
   const [promptValue, setPromptValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingGPT, setLoadingGPT] = useState(false);
+  const [habitLoadingSuccess, setHabitLoadingSuccess] = useState(false);
   const [questions, setQuestions] = useState<GetCategoryQuestionsResponse["questions"]>([]);
   const [shouldBeginLongFetch, setShouldBeginLongFetch] = useState(false);
   const [isLongFetchInProgress, setIsLongFetchInProgress] = useState(false);
@@ -65,6 +66,7 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void; habitLoading: boolea
         });
 
         setHabitLoading(false);
+        setHabitLoadingSuccess(true);
 
         timeoutId = setTimeout(() => {
           router.push(`/habits/${newHabit.habit.id}`);
@@ -75,7 +77,13 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void; habitLoading: boolea
       }
     };
 
-    if (questions.length > 1 && numAnsweredQuestions >= questions.length && !loadingGPT && !habitLoading) {
+    if (
+      questions.length > 1 &&
+      numAnsweredQuestions >= questions.length &&
+      !loadingGPT &&
+      !habitLoading &&
+      !habitLoadingSuccess
+    ) {
       createUserHabitPlan(timeoutId);
     }
 
@@ -91,6 +99,7 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void; habitLoading: boolea
     router,
     loadingGPT,
     habitLoading,
+    habitLoadingSuccess,
   ]);
 
   // fetch questions
