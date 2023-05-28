@@ -2,6 +2,7 @@
 import axios from "axios";
 import { OpenAIApi } from "openai";
 import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { GetInputCategoryResponse } from "~/src/app/api/public/categorize-input/route";
 import { GetCategoryQuestionsResponse } from "~/src/app/api/public/category-questions/route";
 import { scrollDown } from "~/src/utils/helper";
@@ -83,11 +84,13 @@ const UserFlow = () => {
         params: { category: category.category },
       });
 
-      setQuestions(questions.questions);
+      flushSync(() => {
+        setQuestions(questions.questions);
+      });
       setLoading(false);
       setShouldBeginLongFetch(true);
 
-      const el = document.getElementById(`question ${questions.questions[0].prompt}`);
+      const el = document.getElementById(`medium`);
 
       if (el) {
         el.scrollIntoView({ behavior: "smooth", block: "center" });
