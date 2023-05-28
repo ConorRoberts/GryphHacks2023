@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { CircularProgress, Box, useTheme, Typography, Button } from "@mui/material";
 import SuccessHabitPlanAnim from "./SuccessHabitPlanAnim";
 import { styled } from "@mui/system";
+import Link from "next/link";
 
 const CustomSuccessButton = styled(Button)(({ theme }) => ({
   width: "100%",
@@ -115,7 +116,9 @@ const Loader = ({ habitLoading }) => {
             >
               And done!
             </Typography>
-            <CustomSuccessButton variant="contained">Check out your habit plan</CustomSuccessButton>
+            <Link href="/habits">
+              <CustomSuccessButton variant="contained">Check out your habit plan</CustomSuccessButton>
+            </Link>
           </>
         )}
       </Box>

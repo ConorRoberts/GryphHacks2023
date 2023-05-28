@@ -73,10 +73,6 @@ const UserFlow = ({ setHabitLoading }) => {
     }
   }, [numAnsweredQuestions]);
 
-  useEffect(() => {
-    console.log(JSON.stringify(profileObject));
-  }, [profileObject]);
-
   // fetch questions
   const submitHabit = async () => {
     setLoading(true);
@@ -133,9 +129,12 @@ const UserFlow = ({ setHabitLoading }) => {
   }, [shouldBeginLongFetch, promptValue, isLongFetchInProgress]);
 
   // for testing
-  useEffect(() => {
-    console.log(questions);
-  }, [questions]);
+  // useEffect(() => {
+  //   console.log(questions);
+  // }, [questions]);
+  // useEffect(() => {
+  //   console.log(JSON.stringify(profileObject));
+  // }, [profileObject]);
 
   const renderQuestions = () => {
     if (questions) {
