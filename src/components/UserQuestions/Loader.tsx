@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
-import { CircularProgress, Box, useTheme, Typography, Button } from "@mui/material";
-import SuccessHabitPlanAnim from "./SuccessHabitPlanAnim";
+import { Box, Button, CircularProgress, Typography, useTheme } from "@mui/material";
 import { styled } from "@mui/system";
 import Link from "next/link";
+import { FC, useEffect, useRef, useState } from "react";
+import SuccessHabitPlanAnim from "./SuccessHabitPlanAnim";
 
 const CustomSuccessButton = styled(Button)(({ theme }) => ({
   width: "100%",
@@ -21,24 +21,23 @@ const CustomSuccessButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const Loader = ({ habitLoading }) => {
+const loadMessages = [
+  "putting the AI to work",
+  "mapping nodes",
+  "not paying our AI a fair wage",
+  "seriealizing the data",
+  "wrapping up",
+  "almost done",
+];
+
+const Loader: FC<{ habitLoading: boolean }> = ({ habitLoading }) => {
   const theme = useTheme();
   const [loadMessage, setLoadMessage] = useState("gathering your information");
 
   const componentRef = useRef(null);
-  const observer = useRef(null);
-
-  const loadMessages = [
-    "putting the AI to work",
-    "mapping nodes",
-    "not paying our AI a fair wage",
-    "seriealizing the data",
-    "wrapping up",
-    "almost done",
-  ];
 
   useEffect(() => {
-    observer.current = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting) {
@@ -62,12 +61,12 @@ const Loader = ({ habitLoading }) => {
     );
 
     if (componentRef.current) {
-      observer.current.observe(componentRef.current);
+      observer.observe(componentRef.current);
     }
 
     return () => {
-      if (observer.current) {
-        observer.current.disconnect();
+      if (observer) {
+        observer.disconnect();
       }
     };
   }, []);
@@ -95,7 +94,7 @@ const Loader = ({ habitLoading }) => {
                 fontSize: { xs: 22, md: 30 },
               }}
             >
-              Sit tight we're genertaing the perfect habit plan
+              Sit tight we&apos;re genertaing the perfect habit plan
             </Typography>
             <Typography variant="h6" component="h1" sx={{ m: 0, mt: 2, opacity: 0.3 }}>
               {loadMessage}
