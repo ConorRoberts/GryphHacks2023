@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { GetInputCategoryResponse } from "~/src/app/api/public/categorize-input/route";
 import { GetCategoryQuestionsResponse } from "~/src/app/api/public/category-questions/route";
-import { scrollDown } from "~/src/utils/helper";
+import { scrollDown, reformatUserResponses } from "~/src/utils/helper";
 import MainSearch from "../../components/UserQuestions/MainSearch";
 import Medium from "../../components/UserQuestions/Medium";
 import Question from "../../components/UserQuestions/Question";
@@ -24,9 +24,10 @@ const UserFlow = () => {
   const [questionValue, setQuestionValue] = useState("");
   const [answerValue, setAnswerValue] = useState("");
   const [profileObject, setProfileObject] = useState<{ answerValue: string; questionValue: string }[]>([]);
+  const [numAnsweredQuestions, setNumAnsweredQuestions] = useState(0);
 
+  // collects answers from the q&a
   useEffect(() => {
-    // collects answers from thr q&a
     setProfileObject((prevProfileObject) => {
       const updatedProfileObject = [...prevProfileObject];
 
@@ -41,26 +42,35 @@ const UserFlow = () => {
     });
   }, [questionValue, answerValue]);
 
-  const createUserHabitPlan = async () => {
-    // TODO set loader
-    try {
-      const prompt = `I want to build a habit of ${promptValue}`;
-      const response = await axios.post<GeneratedUserHabit>("/api/habits/create/", {
-        params: {
-          currentDay: 1,
-          habit: promptValue,
-          prompt: prompt,
-        },
-      });
+  // set's off api to generate habit plan
+  useEffect(() => {
+    const createUserHabitPlan = async () => {
+      // TODO set loader
+      try {
+        const reformattedProfileObject = reformatUserResponses(profileObject);
+        const response = await axios.post<GeneratedUserHabit>("/api/habits/create/", {
+          params: {
+            currentDay: 1,
+            habit: promptValue,
+            userInfo: reformattedProfileObject,
+          },
+        });
 
-      console.log(response.data.habit);
+        console.log(response.data.habit);
 
-      scrollDown();
-    } catch (error) {
-      setLoading(false);
-      console.error(error);
+        scrollDown();
+      } catch (error) {
+        setLoading(false);
+        console.error(error);
+      }
+    };
+
+    console.log(numAnsweredQuestions);
+
+    if (numAnsweredQuestions >= 15) {
+      createUserHabitPlan();
     }
-  };
+  }, [numAnsweredQuestions]);
 
   // for testing
   // useEffect(() => {
@@ -83,11 +93,11 @@ const UserFlow = () => {
       const { data: questions } = await axios.get<GetCategoryQuestionsResponse>("/api/public/category-questions", {
         params: { category: category.category },
       });
+      setLoading(false);
 
       flushSync(() => {
         setQuestions(questions.questions);
       });
-      setLoading(false);
       setShouldBeginLongFetch(true);
 
       const el = document.getElementById(`medium`);
@@ -102,18 +112,26 @@ const UserFlow = () => {
     }
   };
 
+  // gpt questions
   useEffect(() => {
     (async () => {
       if (shouldBeginLongFetch && !isLongFetchInProgress) {
         setIsLongFetchInProgress(true);
-        const { data } = await axios.post<GetCategoryQuestionsResponse>("/api/questions/generate-user-quiz", {
-          prompt: promptValue,
-        });
+        try {
+          const { data } = await axios.post<GetCategoryQuestionsResponse>("/api/questions/generate-user-quiz/", {
+            prompt: promptValue,
+          });
 
-        setQuestions((q) => [...q, ...data.questions]);
+          console.log(data.questions);
+          setQuestions((q) => [...q, ...data.questions]);
 
-        setShouldBeginLongFetch(false);
-        setIsLongFetchInProgress(false);
+          setShouldBeginLongFetch(false);
+          setIsLongFetchInProgress(false);
+        } catch (error) {
+          console.error(error);
+          setShouldBeginLongFetch(false);
+          setIsLongFetchInProgress(false);
+        }
       }
     })();
   }, [shouldBeginLongFetch, promptValue, isLongFetchInProgress]);
@@ -121,7 +139,14 @@ const UserFlow = () => {
   const renderQuestions = () => {
     if (questions) {
       return questions.map((question, index) => (
-        <Question key={index} question={question} setAnswerValue={setAnswerValue} setQuestionValue={setQuestionValue} />
+        <Question
+          key={index}
+          question={question}
+          setAnswerValue={setAnswerValue}
+          setQuestionValue={setQuestionValue}
+          numAnsweredQuestions={numAnsweredQuestions}
+          setNumAnsweredQuestions={setNumAnsweredQuestions}
+        />
       ));
     }
   };

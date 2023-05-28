@@ -25,9 +25,17 @@ interface OptionsListProps {
   question: Question & { followUp: Question | null };
   setAnswerValue: (str: string) => void;
   setQuestionValue: (str: string) => void;
+  numAnsweredQuestions: number;
+  setNumAnsweredQuestions: (num: number) => void;
 }
 
-const OptionsList: FC<OptionsListProps> = ({ question, setAnswerValue, setQuestionValue }) => {
+const OptionsList: FC<OptionsListProps> = ({
+  question,
+  setAnswerValue,
+  setQuestionValue,
+  numAnsweredQuestions,
+  setNumAnsweredQuestions,
+}) => {
   const theme = useTheme();
   const [tempTextFieldInputVal, setTempTextFieldInputVal] = useState("");
   const { options } = question;
@@ -35,7 +43,7 @@ const OptionsList: FC<OptionsListProps> = ({ question, setAnswerValue, setQuesti
   const getQuestionAndAnswer = (value: string) => {
     setAnswerValue(value);
     setQuestionValue(question.prompt);
-
+    setNumAnsweredQuestions(numAnsweredQuestions + 1);
     scrollDown();
   };
 
@@ -70,6 +78,7 @@ const OptionsList: FC<OptionsListProps> = ({ question, setAnswerValue, setQuesti
             if (event.key === "Enter") {
               scrollDown();
               setAnswerValue(tempTextFieldInputVal);
+              setNumAnsweredQuestions(numAnsweredQuestions + 1);
             }
           }}
         />
@@ -107,9 +116,17 @@ interface QuestionProps {
   question: Question & { followUp: Question | null };
   setAnswerValue: (value: string) => void;
   setQuestionValue: (value: string) => void;
+  numAnsweredQuestions: number;
+  setNumAnsweredQuestions: (num: number) => void;
 }
 
-const Question: React.FC<QuestionProps> = ({ question, setAnswerValue, setQuestionValue }) => {
+const Question: React.FC<QuestionProps> = ({
+  question,
+  setAnswerValue,
+  setQuestionValue,
+  numAnsweredQuestions,
+  setNumAnsweredQuestions,
+}) => {
   const { options } = question;
   const theme = useTheme();
   const [tempTextFieldInputVal, setTempTextFieldInputVal] = useState("");
@@ -141,7 +158,13 @@ const Question: React.FC<QuestionProps> = ({ question, setAnswerValue, setQuesti
           </Typography>
 
           {/* QUESTIONS */}
-          <OptionsList question={question} setAnswerValue={setAnswerValue} setQuestionValue={setQuestionValue} />
+          <OptionsList
+            question={question}
+            setAnswerValue={setAnswerValue}
+            setQuestionValue={setQuestionValue}
+            numAnsweredQuestions={numAnsweredQuestions}
+            setNumAnsweredQuestions={setNumAnsweredQuestions}
+          />
         </Box>
       </Box>
     </>

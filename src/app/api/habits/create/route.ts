@@ -29,7 +29,7 @@ export const POST = async (request: Request) => {
 
   const currentDay = body.params.currentDay;
   const habit = body.params.habit;
-  const userInfo = body.params.propmt;
+  const userInfo = body.params.userInfo;
 
   const openai = getOpenAiClient();
 
