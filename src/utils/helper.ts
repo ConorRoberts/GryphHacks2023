@@ -17,3 +17,9 @@ export const reformatUserResponses = (data: { answerValue: string; questionValue
 
   return output;
 };
+
+export const capitalizeWords = (str: string): string => {
+  return str.replace(/\b\w/g, (match: string) => {
+    return match.toUpperCase();
+  });
+};
