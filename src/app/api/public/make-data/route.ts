@@ -34,7 +34,7 @@ export const GET = async () => {
     data: questionList.map((q) => ({
       prompt: q.question,
       options: typeof q.options === "string" ? [] : q.options,
-      type: typeof q.options === "string" ? "multiple" : "input",
+      type: typeof q.options !== "string" && q.options.length > 0 ? "multiple" : "input",
       categoryId: category?.id ?? 0,
     })),
   });
@@ -52,7 +52,7 @@ export const GET = async () => {
           data: {
             prompt: q.question,
             options: typeof q.options === "string" ? [] : q.options,
-            type: typeof q.options === "string" ? "multiple" : "input",
+            type: typeof q.options === "string" ? "input" : "multiple",
             categoryId: category?.id ?? 0,
           },
         });
