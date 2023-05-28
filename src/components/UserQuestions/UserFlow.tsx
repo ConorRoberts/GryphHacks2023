@@ -7,6 +7,9 @@ import { scrollDown } from "~/src/utils/helper";
 import MainSearch from "../../components/UserQuestions/MainSearch";
 import Medium from "../../components/UserQuestions/Medium";
 import Question from "../../components/UserQuestions/Question";
+import { OpenAIApi } from "openai";
+
+type GeneratedUserHabit = Awaited<ReturnType<OpenAIApi["createCompletion"]>>;
 
 const UserFlow = () => {
   // for fetching questions
@@ -22,6 +25,7 @@ const UserFlow = () => {
   const [profileObject, setProfileObject] = useState<{ answerValue: string; questionValue: string }[]>([]);
 
   useEffect(() => {
+    // collects answers from thr q&a
     setProfileObject((prevProfileObject) => {
       const updatedProfileObject = [...prevProfileObject];
 
@@ -36,8 +40,35 @@ const UserFlow = () => {
     });
   }, [questionValue, answerValue]);
 
+  const createUserHabitPlan = async () => {
+    // TODO set loader
+    try {
+      const prompt = `I want to build a habit of ${promptValue}`;
+      const response = await axios.post<GeneratedUserHabit>("/api/habits/create/", {
+        params: {
+          currentDay: 1,
+          habit: promptValue,
+          prompt: prompt,
+        },
+      });
+
+      console.log(response.data);
+
+      scrollDown();
+    } catch (error) {
+      setLoading(false);
+      console.error(error);
+    }
+  };
+
+  // for testing
+  // useEffect(() => {
+  //   console.log("called");
+  //   createUserHabitPlan();
+  // }, []);
+
   useEffect(() => {
-    console.log(profileObject);
+    console.log(JSON.stringify(profileObject));
   }, [profileObject]);
 
   // fetch questions
@@ -52,7 +83,6 @@ const UserFlow = () => {
         params: { category: category.category },
       });
 
-      setQuestions(questions.questions);
       setLoading(false);
       setShouldBeginLongFetch(true);
       scrollDown();
