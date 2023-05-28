@@ -65,7 +65,7 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoadi
 
         timeoutId = setTimeout(() => {
           router.push(`/habits/${newHabit.habit.id}`);
-        }, 3000);
+        }, 2000);
       } catch (error) {
         setHabitLoading(false);
         console.error(error);
