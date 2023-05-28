@@ -90,7 +90,7 @@ const UserFlow = () => {
       setLoading(false);
       setShouldBeginLongFetch(true);
 
-      const el = document.getElementById(`question ${questions.questions[0].prompt}`);
+      const el = document.getElementById(`medium`);
 
       if (el) {
         el.scrollIntoView({ behavior: "smooth", block: "center" });

@@ -18,6 +18,7 @@ const Medium = () => {
   return (
     <>
       <Box
+        id="medium"
         sx={{
           flexDirection: { xs: "column" },
           height: "100vh",
