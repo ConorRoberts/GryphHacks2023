@@ -17,6 +17,9 @@ const Page = async (props: { params: { habitId: string } }) => {
       habitId: Number(props.params.habitId),
       userId,
     },
+    orderBy: {
+      startTime: "asc",
+    },
   });
 
   return (
