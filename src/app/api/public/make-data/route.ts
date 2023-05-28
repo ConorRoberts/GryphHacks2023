@@ -1,78 +1,6 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { prisma } from "~/src/utils/prisma";
-
-export const GET = async () => {
-  if (process.env.NODE_ENV === "production") {
-    return NextResponse.json({ message: "don't run this please" });
-  }
-
-  type Question = {
-    question: string;
-    options: string[] | string;
-    followUp?: Question;
-  };
-
-  const questionList = cognitiveQuestions as Question[];
-
-  const category = await prisma.habitCategory.findFirst({
-    where: {
-      name: "cognitive",
-    },
-  });
-
-  if (!category) {
-    return;
-  }
-
-  await prisma.question.deleteMany({
-    where: {
-      categoryId: category.id,
-    },
-  });
-
-  await prisma.question.createMany({
-    data: questionList.map((q) => ({
-      prompt: q.question,
-      options: typeof q.options === "string" ? [] : q.options,
-      type: typeof q.options !== "string" && q.options.length > 0 ? "multiple" : "input",
-      categoryId: category?.id ?? 0,
-    })),
-  });
-
-  for (const q of questionList) {
-    if (q.followUp) {
-      const parent = await prisma.question.findFirst({
-        where: {
-          prompt: q.question,
-        },
-      });
-
-      if (parent) {
-        const followUp = await prisma.question.create({
-          data: {
-            prompt: q.question,
-            options: typeof q.options === "string" ? [] : q.options,
-            type: typeof q.options === "string" ? "input" : "multiple",
-            categoryId: category?.id ?? 0,
-          },
-        });
-
-        await prisma.question.updateMany({
-          where: {
-            id: parent.id,
-          },
-          data: {
-            followUpId: followUp.id,
-          },
-        });
-      } else {
-        console.log("No parent?");
-      }
-    }
-  }
-
-  return NextResponse.json({ hi: "ss" });
-};
 
 const cognitiveQuestions = [
   {
@@ -407,3 +335,86 @@ const dietaryQuestions = [
     options: ["No", "Yes"],
   },
 ];
+
+const lists = {
+  cognitive: cognitiveQuestions,
+  fitness: fitnessQuestionsList,
+  dietary: dietaryQuestions,
+};
+
+export const GET = async (request: Request) => {
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ message: "don't run this please" });
+  }
+
+  type Question = {
+    question: string;
+    options: string[] | string;
+    followUp?: Question;
+  };
+
+  const { searchParams } = new URL(request.url);
+
+  const categoryName = z.enum(["fitness", "cognitive", "dietary"]).parse(searchParams.get("category"));
+
+  const questionList = lists[categoryName] as Question[];
+
+  const category = await prisma.habitCategory.findFirst({
+    where: {
+      name: "cognitive",
+    },
+  });
+
+  if (!category) {
+    return;
+  }
+
+  await prisma.question.deleteMany({
+    where: {
+      categoryId: category.id,
+    },
+  });
+
+  await prisma.question.createMany({
+    data: questionList.map((q) => ({
+      prompt: q.question,
+      options: typeof q.options === "string" ? [] : q.options,
+      type: typeof q.options !== "string" && q.options.length > 0 ? "multiple" : "input",
+      categoryId: category?.id ?? 0,
+    })),
+  });
+
+  for (const q of questionList) {
+    if (q.followUp) {
+      const parent = await prisma.question.findFirst({
+        where: {
+          prompt: q.question,
+        },
+      });
+
+      if (parent) {
+        const followUp = await prisma.question.create({
+          data: {
+            prompt: q.question,
+            options: typeof q.options === "string" ? [] : q.options,
+            type: typeof q.options === "string" ? "input" : "multiple",
+            categoryId: category?.id ?? 0,
+          },
+        });
+
+        await prisma.question.updateMany({
+          where: {
+            id: parent.id,
+          },
+          data: {
+            followUpId: followUp.id,
+          },
+        });
+      } else {
+        console.log("No parent?");
+      }
+    }
+  }
+
+  return NextResponse.json({ hi: "ss" });
+};
