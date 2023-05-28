@@ -1,6 +1,5 @@
 "use client";
 import axios from "axios";
-import type { OpenAIApi } from "openai";
 import { useEffect, useState } from "react";
 import { GetInputCategoryResponse } from "~/src/app/api/public/categorize-input/route";
 import { GetCategoryQuestionsResponse } from "~/src/app/api/public/category-questions/route";
@@ -9,14 +8,13 @@ import MainSearch from "../../components/UserQuestions/MainSearch";
 import Medium from "../../components/UserQuestions/Medium";
 import Question from "../../components/UserQuestions/Question";
 
-type GeneratedUserQuiz = Awaited<ReturnType<OpenAIApi["createCompletion"]>>;
-
 const UserFlow = () => {
   // for fetching questions
   const [promptValue, setPromptValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState<GetCategoryQuestionsResponse["questions"]>([]);
   const [shouldBeginLongFetch, setShouldBeginLongFetch] = useState(false);
+  const [isLongFetchInProgress, setIsLongFetchInProgress] = useState(false);
 
   // for building user profile
   const [questionValue, setQuestionValue] = useState("");
@@ -66,19 +64,19 @@ const UserFlow = () => {
 
   useEffect(() => {
     (async () => {
-      if (shouldBeginLongFetch) {
-        const { data } = await axios.post<GeneratedUserQuiz>("/api/questions/generate-user-quiz/", {
-          params: {
-            prompt: prompt,
-          },
+      if (shouldBeginLongFetch && !isLongFetchInProgress) {
+        setIsLongFetchInProgress(true);
+        const { data } = await axios.post<GetCategoryQuestionsResponse>("/api/questions/generate-user-quiz", {
+          prompt: promptValue,
         });
 
-        // TODO concatenate with questions list
+        setQuestions((q) => [...q, ...data.questions]);
 
         setShouldBeginLongFetch(false);
+        setIsLongFetchInProgress(false);
       }
     })();
-  }, [shouldBeginLongFetch]);
+  }, [shouldBeginLongFetch, promptValue, isLongFetchInProgress]);
 
   const renderQuestions = () => {
     if (questions) {
