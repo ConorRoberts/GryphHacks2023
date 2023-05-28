@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { CircularProgress, Box, useTheme, Typography } from "@mui/material";
 
-const Loader = () => {
+const Loader = ({ habitLoading }) => {
   const theme = useTheme();
   const [loadMessage, setLoadMessage] = useState("gathering your information");
 
@@ -62,22 +62,39 @@ const Loader = () => {
       }}
     >
       <Box ref={componentRef} sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <CircularProgress color="primary" />
-        <Typography
-          variant="h2"
-          component="h4"
-          sx={{
-            mt: 4,
-            textAlign: "center",
-            color: theme.palette.primary.main,
-            fontSize: { xs: 22, md: 30 },
-          }}
-        >
-          Sit tight we're genertaing the perfect habit plan
-        </Typography>
-        <Typography variant="h6" component="h1" sx={{ m: 0, mt: 2, opacity: 0.3 }}>
-          {loadMessage}
-        </Typography>
+        {habitLoading ? (
+          <>
+            <CircularProgress color="primary" />
+            <Typography
+              variant="h2"
+              component="h4"
+              sx={{
+                mt: 4,
+                textAlign: "center",
+                color: theme.palette.primary.main,
+                fontSize: { xs: 22, md: 30 },
+              }}
+            >
+              Sit tight we're genertaing the perfect habit plan
+            </Typography>
+            <Typography variant="h6" component="h1" sx={{ m: 0, mt: 2, opacity: 0.3 }}>
+              {loadMessage}
+            </Typography>
+          </>
+        ) : (
+          <Typography
+            variant="h2"
+            component="h4"
+            sx={{
+              mt: 4,
+              textAlign: "center",
+              color: theme.palette.primary.main,
+              fontSize: { xs: 22, md: 30 },
+            }}
+          >
+            Loaded
+          </Typography>
+        )}
       </Box>
     </Box>
   );

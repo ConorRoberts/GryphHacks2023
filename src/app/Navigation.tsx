@@ -20,7 +20,7 @@ const Navigation = () => {
               href="/habits"
               className="rounded hover:bg-gray-50 transition duration-75 px-3 py-0.5 font-medium text-sm flex items-center justify-center"
             >
-              <p>Habits</p>
+              <p>Your Habits</p>
             </Link>
           )}
         </div>

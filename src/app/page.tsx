@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import { Box } from "@mui/system";
 import Title from "../components/Title";
@@ -8,6 +8,8 @@ import theme from "../context/theme";
 import Loader from "../components/UserQuestions/Loader";
 
 export default function Home() {
+  const [habitLoading, setHabitLoading] = useState(false);
+
   useEffect(() => {
     // disable scrolling when mounted
     document.body.style.overflow = "hidden";
@@ -22,8 +24,8 @@ export default function Home() {
     <main>
       <ThemeProvider theme={theme}>
         <Title />
-        <UserFlow />
-        <Loader />
+        <UserFlow setHabitLoading={setHabitLoading} />
+        <Loader habitLoading={habitLoading} />
       </ThemeProvider>
     </main>
   );

@@ -12,7 +12,7 @@ import Question from "../../components/UserQuestions/Question";
 
 type GeneratedUserHabit = Awaited<ReturnType<OpenAIApi["createCompletion"]>>;
 
-const UserFlow = () => {
+const UserFlow = ({ setHabitLoading }) => {
   // for fetching questions
   const [promptValue, setPromptValue] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,6 +47,8 @@ const UserFlow = () => {
     const createUserHabitPlan = async () => {
       // TODO set loader
       try {
+        setHabitLoading(true);
+        console.log("LOADED TRU");
         const reformattedProfileObject = reformatUserResponses(profileObject);
         const response = await axios.post<GeneratedUserHabit>("/api/habits/create/", {
           params: {
@@ -58,25 +60,21 @@ const UserFlow = () => {
 
         console.log(response.data.habit);
 
-        scrollDown();
+        setHabitLoading(false);
+        console.log("LOADED FALSE");
       } catch (error) {
-        setLoading(false);
+        setHabitLoading(false);
         console.error(error);
       }
     };
 
     console.log(numAnsweredQuestions);
 
-    if (numAnsweredQuestions >= 15) {
+    if (numAnsweredQuestions >= questions.length) {
+      console.log("fired");
       createUserHabitPlan();
     }
   }, [numAnsweredQuestions]);
-
-  // for testing
-  // useEffect(() => {
-  //   console.log("called");
-  //   createUserHabitPlan();
-  // }, []);
 
   useEffect(() => {
     console.log(JSON.stringify(profileObject));
@@ -114,27 +112,33 @@ const UserFlow = () => {
 
   // gpt questions
   useEffect(() => {
-    (async () => {
-      if (shouldBeginLongFetch && !isLongFetchInProgress) {
-        setIsLongFetchInProgress(true);
-        try {
-          const { data } = await axios.post<GetCategoryQuestionsResponse>("/api/questions/generate-user-quiz/", {
-            prompt: promptValue,
-          });
+    const fetchGPTData = async () => {
+      setIsLongFetchInProgress(true);
+      try {
+        const { data } = await axios.post<GetCategoryQuestionsResponse>("/api/questions/generate-user-quiz/", {
+          prompt: promptValue,
+        });
 
-          console.log(data.questions);
-          setQuestions((q) => [...q, ...data.questions]);
+        setQuestions((q) => [...q, ...data.questions]);
 
-          setShouldBeginLongFetch(false);
-          setIsLongFetchInProgress(false);
-        } catch (error) {
-          console.error(error);
-          setShouldBeginLongFetch(false);
-          setIsLongFetchInProgress(false);
-        }
+        setShouldBeginLongFetch(false);
+        setIsLongFetchInProgress(false);
+      } catch (error) {
+        console.error(error);
+        setShouldBeginLongFetch(false);
+        setIsLongFetchInProgress(false);
       }
-    })();
+    };
+
+    if (shouldBeginLongFetch && !isLongFetchInProgress) {
+      fetchGPTData();
+    }
   }, [shouldBeginLongFetch, promptValue, isLongFetchInProgress]);
+
+  // for testing
+  // useEffect(() => {
+  //   console.log(questions);
+  // }, [questions]);
 
   const renderQuestions = () => {
     if (questions) {

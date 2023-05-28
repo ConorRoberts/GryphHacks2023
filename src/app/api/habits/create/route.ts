@@ -32,13 +32,16 @@ export const POST = async (request: Request) => {
   const userInfo = body.params.userInfo;
 
   const openai = getOpenAiClient();
+  const prompt = `Task: Starting at day ${currentDay}, create the next 5 days of a strucured plan that helps someone build a habit of ${habit}.\n\nHere is a description of the person who wishes to build that habit:\n\n ${userInfo}\n\nRequirements:\n- The plan should be optimized so that they do not feel burned out\n- After the last day of the plan, the habit should be deeply built into their life and feel effortless to maintain\nOutput:- Format the output as JSON with the format [{day: number, action: string, duration: number}]. The output should contain no other characters other than the JSON\n- The "action" field of the returned JSON represents the action they must take on a given day. It should be concise, clear, and relate directly to their habit goal.\n- For the duration of the habit building, there should be exactly one action per day.\n- Your response should contain no text other than the JSON array`;
+
+  console.log(prompt);
 
   const completion = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: [
       {
         role: "user",
-        content: `Task: Starting at day ${currentDay}, create the next 5 days of a strucured plan that helps someone build a habit of ${habit}.\n\nHere is a description of the person who wishes to build that habit ${userInfo}\n\nRequirements:\n- The plan should be optimized so that they do not feel burned out\n- After the last day of the plan, the habit should be deeply built into their life and feel effortless to maintain\nOutput:- Format the output as JSON with the format [{day: number, action: string, duration: number}]. The output should contain no other characters other than the JSON\n- The "action" field of the returned JSON represents the action they must take on a given day. It should be concise, clear, and relate directly to their habit goal.\n- For the duration of the habit building, there should be exactly one action per day.\n- Your response should contain no text other than the JSON array`,
+        content: prompt,
       },
     ],
   });
