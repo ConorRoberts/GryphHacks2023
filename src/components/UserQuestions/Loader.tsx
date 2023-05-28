@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { CircularProgress, Box, useTheme, Typography } from "@mui/material";
 
 const Loader = () => {
   const theme = useTheme();
-  const [loadMessage, setLoadMessage] = useState("");
+  const [loadMessage, setLoadMessage] = useState("gathering your information");
+
+  const componentRef = useRef(null);
+  const observer = useRef(null);
 
   const loadMessages = [
-    "gathering your information",
     "putting the AI to work",
     "mapping nodes",
     "not paying our AI a fair wage",
@@ -16,19 +18,37 @@ const Loader = () => {
   ];
 
   useEffect(() => {
-    let currentIndex = 0;
+    observer.current = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+          let currentIndex = 0;
 
-    const interval = setInterval(() => {
-      if (currentIndex === loadMessages.length - 1) {
-        clearInterval(interval);
-      }
+          const interval = setInterval(() => {
+            if (currentIndex === loadMessages.length - 1) {
+              clearInterval(interval);
+            }
 
-      setLoadMessage(loadMessages[currentIndex]);
-      currentIndex++;
-    }, 2000);
+            setLoadMessage(loadMessages[currentIndex]);
+            currentIndex++;
+          }, 2000);
+
+          return () => {
+            clearInterval(interval);
+          };
+        }
+      },
+      { threshold: 0.5 } // Adjust threshold value as needed
+    );
+
+    if (componentRef.current) {
+      observer.current.observe(componentRef.current);
+    }
 
     return () => {
-      clearInterval(interval);
+      if (observer.current) {
+        observer.current.disconnect();
+      }
     };
   }, []);
 
@@ -41,7 +61,7 @@ const Loader = () => {
         alignItems: "center",
       }}
     >
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <Box ref={componentRef} sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         <CircularProgress color="primary" />
         <Typography
           variant="h2"

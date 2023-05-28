@@ -23,6 +23,7 @@ export const GET = async (request: Request) => {
     include: {
       followUp: true,
     },
+    take: 10, // Limit
   });
 
   return NextResponse.json({ questions });
