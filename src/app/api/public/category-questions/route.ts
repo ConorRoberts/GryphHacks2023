@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "~/src/utils/prisma";
 
-export type GetCategoryQuestionsResponse = { questions: (Question & { followUpQuestion: Question | null })[] };
+export type GetCategoryQuestionsResponse = { questions: (Question & { followUp: Question | null })[] };
 
 export const GET = async (request: Request) => {
   const { searchParams } = new URL(request.url);

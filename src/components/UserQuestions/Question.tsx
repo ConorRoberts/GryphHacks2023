@@ -1,6 +1,7 @@
 import SubdirectoryArrowLeftIcon from "@mui/icons-material/SubdirectoryArrowLeft";
-import { Box, Button, IconButton, Input, Typography, useTheme, Tooltip } from "@mui/material";
+import { Box, Button, Input, Tooltip, Typography, useTheme } from "@mui/material";
 import { styled } from "@mui/system";
+import { Question } from "@prisma/client";
 import { FC, useState } from "react";
 import { scrollDown } from "../../utils/helper";
 
@@ -21,24 +22,24 @@ const CustomOptionButton = styled(Button)(({ theme }) => ({
 }));
 
 interface OptionsListProps {
-  options: string[] | string;
-  question: string;
+  question: Question & { followUp: Question | null };
   setAnswerValue: (str: string) => void;
   setQuestionValue: (str: string) => void;
 }
 
-const OptionsList: FC<OptionsListProps> = ({ options, question, setAnswerValue, setQuestionValue }) => {
+const OptionsList: FC<OptionsListProps> = ({ question, setAnswerValue, setQuestionValue }) => {
   const theme = useTheme();
   const [tempTextFieldInputVal, setTempTextFieldInputVal] = useState("");
+  const { options } = question;
 
-  const getQuestionAndAnswer = (value) => {
+  const getQuestionAndAnswer = (value: string) => {
     setAnswerValue(value);
-    setQuestionValue(question);
+    setQuestionValue(question.prompt);
 
     scrollDown();
   };
 
-  if (options[0] === "input required" || options === "input required") {
+  if (question.type === "input") {
     return (
       <Box>
         <Input
@@ -103,13 +104,13 @@ const OptionsList: FC<OptionsListProps> = ({ options, question, setAnswerValue, 
 };
 
 interface QuestionProps {
-  question: string;
-  options: string[];
+  question: Question & { followUp: Question | null };
   setAnswerValue: (value: string) => void;
   setQuestionValue: (value: string) => void;
 }
 
-const Question: React.FC<QuestionProps> = ({ question, options, setAnswerValue, setQuestionValue }) => {
+const Question: React.FC<QuestionProps> = ({ question, setAnswerValue, setQuestionValue }) => {
+  const { options } = question;
   const theme = useTheme();
   const [tempTextFieldInputVal, setTempTextFieldInputVal] = useState("");
 
@@ -122,6 +123,7 @@ const Question: React.FC<QuestionProps> = ({ question, options, setAnswerValue, 
           justifyContent: "center",
           alignItems: "center",
         }}
+        id={`question ${question}`}
       >
         <Box sx={{ display: "flex", flexDirection: "column", maxWidth: { xs: "80%", sm: "70%", md: "50%" } }}>
           <Typography
@@ -135,16 +137,11 @@ const Question: React.FC<QuestionProps> = ({ question, options, setAnswerValue, 
               lineHeight: 1.4,
             }}
           >
-            {question}
+            {question.prompt}
           </Typography>
 
           {/* QUESTIONS */}
-          <OptionsList
-            options={options}
-            question={question}
-            setAnswerValue={setAnswerValue}
-            setQuestionValue={setQuestionValue}
-          />
+          <OptionsList question={question} setAnswerValue={setAnswerValue} setQuestionValue={setQuestionValue} />
         </Box>
       </Box>
     </>

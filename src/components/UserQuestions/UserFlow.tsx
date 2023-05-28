@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import { OpenAIApi } from "openai";
 import { useEffect, useState } from "react";
 import { GetInputCategoryResponse } from "~/src/app/api/public/categorize-input/route";
 import { GetCategoryQuestionsResponse } from "~/src/app/api/public/category-questions/route";
@@ -7,7 +8,6 @@ import { scrollDown } from "~/src/utils/helper";
 import MainSearch from "../../components/UserQuestions/MainSearch";
 import Medium from "../../components/UserQuestions/Medium";
 import Question from "../../components/UserQuestions/Question";
-import { OpenAIApi } from "openai";
 
 type GeneratedUserHabit = Awaited<ReturnType<OpenAIApi["createCompletion"]>>;
 
@@ -86,7 +86,13 @@ const UserFlow = () => {
       setQuestions(questions.questions);
       setLoading(false);
       setShouldBeginLongFetch(true);
-      scrollDown();
+
+      const el = document.getElementById(`question ${questions.questions[0].prompt}`);
+
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      // scrollDown();
     } catch (error) {
       setLoading(false);
       console.error(error);
@@ -112,13 +118,7 @@ const UserFlow = () => {
   const renderQuestions = () => {
     if (questions) {
       return questions.map((question, index) => (
-        <Question
-          key={index}
-          question={question.prompt}
-          options={question.options}
-          setAnswerValue={setAnswerValue}
-          setQuestionValue={setQuestionValue}
-        />
+        <Question key={index} question={question} setAnswerValue={setAnswerValue} setQuestionValue={setQuestionValue} />
       ));
     }
   };
