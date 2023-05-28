@@ -52,7 +52,7 @@ const UserFlow = () => {
         },
       });
 
-      console.log(response.data);
+      console.log(response.data.habit);
 
       scrollDown();
     } catch (error) {
