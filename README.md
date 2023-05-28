@@ -1,5 +1,10 @@
 # GryphHacks2023
 
+You can find our app [here](https://gryph-hacks2023-ten.vercel.app/) 👍
+<br/>
+<br/>
+
+## Setup & Installation
 You will need your own set of environemnt variables. <br/>
 Create a `.env` file in the root directory and paste the following in the file.<br/>
 **(you will need to replace `your_variable_here` with your own variables)**
