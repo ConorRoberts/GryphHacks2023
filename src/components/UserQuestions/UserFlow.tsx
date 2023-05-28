@@ -86,13 +86,7 @@ const UserFlow = () => {
       setQuestions(questions.questions);
       setLoading(false);
       setShouldBeginLongFetch(true);
-
-      const el = document.getElementById(`question ${questions.questions[0].prompt}`);
-
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-      // scrollDown();
+      scrollDown();
     } catch (error) {
       setLoading(false);
       console.error(error);
