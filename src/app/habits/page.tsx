@@ -32,7 +32,7 @@ const Page = async () => {
       )}
       {habits.length > 0 && (
         <div className="mx-auto w-full max-w-xl shadow-lg rounded-xl overflow-hidden flex flex-col border border-gray-100 divide-y divide-gray-100">
-          {habits.map((h) => (
+          {habits.reverse().map((h) => (
             <HabitListElement data={h} key={`habit ${h.id}`} />
           ))}
         </div>
