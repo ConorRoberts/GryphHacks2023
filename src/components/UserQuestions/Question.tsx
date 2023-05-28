@@ -123,7 +123,7 @@ const Question: React.FC<QuestionProps> = ({ question, setAnswerValue, setQuesti
           justifyContent: "center",
           alignItems: "center",
         }}
-        id={`question ${question}`}
+        id={`question ${question.prompt}`}
       >
         <Box sx={{ display: "flex", flexDirection: "column", maxWidth: { xs: "80%", sm: "70%", md: "50%" } }}>
           <Typography
