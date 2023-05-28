@@ -6,6 +6,8 @@ import HabitListElement from "./HabitListElement";
 
 export const revalidate = 0;
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 const Page = async () => {
   const { userId } = auth();

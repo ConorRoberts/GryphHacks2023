@@ -1,8 +1,9 @@
 import { auth } from "@clerk/nextjs";
 import { Habit, Task } from "@prisma/client";
 import dayjs from "dayjs";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { ZodError, z } from "zod";
+import { ZodError } from "zod";
 import { getOpenAiClient } from "~/src/utils/getOpenAiClient";
 import { habitTaskSchema } from "~/src/utils/habitTaskSchema";
 import { prisma } from "~/src/utils/prisma";
@@ -55,14 +56,11 @@ export const POST = async (request: Request) => {
         const parsedContent = JSON.parse(content);
         const validatedContent = generatedTaskSchema.array().parse(parsedContent);
 
-        const tasks: Omit<Task, "habitId" | "id">[] = validatedContent.map((t) => ({
+        const tasks: Omit<Task, "habitId" | "id">[] = validatedContent.map((t, i) => ({
           description: t.action,
           isComplete: false,
           duration: t.duration,
-          startTime: dayjs()
-            .startOf("day")
-            .add(t.day - 1, "days")
-            .toDate(),
+          startTime: dayjs().startOf("day").add(i, "days").toDate(),
           userId,
         }));
 
@@ -76,6 +74,8 @@ export const POST = async (request: Request) => {
             },
           },
         });
+
+        revalidatePath("/habits");
 
         return NextResponse.json({ habit: newHabit });
       }
