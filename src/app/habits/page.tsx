@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import { prisma } from "~/src/utils/prisma";
 import HabitListElement from "./HabitListElement";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 const Page = async () => {
   const { userId } = auth();
 
