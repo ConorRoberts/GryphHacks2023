@@ -11,11 +11,13 @@ import { reformatUserResponses } from "~/src/utils/helper";
 import MainSearch from "../../components/UserQuestions/MainSearch";
 import Medium from "../../components/UserQuestions/Medium";
 import Question from "../../components/UserQuestions/Question";
+import GPTLoader from "./GPTLoader";
 
 const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoading }) => {
   // for fetching questions
   const [promptValue, setPromptValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingGPT, setLoadingGPT] = useState(false);
   const [questions, setQuestions] = useState<GetCategoryQuestionsResponse["questions"]>([]);
   const [shouldBeginLongFetch, setShouldBeginLongFetch] = useState(false);
   const [isLongFetchInProgress, setIsLongFetchInProgress] = useState(false);
@@ -46,7 +48,6 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoadi
   // set's off api to generate habit plan
   useEffect(() => {
     const createUserHabitPlan = async () => {
-      // TODO set loader
       try {
         setHabitLoading(true);
         const reformattedProfileObject = reformatUserResponses(profileObject);
@@ -105,6 +106,7 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoadi
   useEffect(() => {
     const fetchGPTData = async () => {
       setIsLongFetchInProgress(true);
+      setLoadingGPT(true);
       try {
         const { data } = await axios.post<GetCategoryQuestionsResponse>("/api/questions/generate-user-quiz/", {
           prompt: promptValue,
@@ -112,10 +114,12 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoadi
 
         setQuestions((q) => [...q, ...data.questions]);
 
+        setLoadingGPT(false);
         setShouldBeginLongFetch(false);
         setIsLongFetchInProgress(false);
       } catch (error) {
         console.error(error);
+        setLoadingGPT(false);
         setShouldBeginLongFetch(false);
         setIsLongFetchInProgress(false);
       }
@@ -146,6 +150,7 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoadi
           setNumAnsweredQuestions={setNumAnsweredQuestions}
         />
       ))}
+      {loadingGPT && <GPTLoader />}
     </>
   );
 };
