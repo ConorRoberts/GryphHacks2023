@@ -66,7 +66,7 @@ const MainSearch: FC<{
                   width: { xs: 350, md: 470, lg: 450 },
                 },
               }}
-              placeholder="day drinking"
+              placeholder="riding a hippo"
               autoComplete="off"
               value={promptValue}
               onChange={(event) => {
@@ -78,7 +78,7 @@ const MainSearch: FC<{
                 }
               }}
             />
-            <Tooltip title={!loading ? "Generate Plan" : "Generating... be patient"} placement="top">
+            <Tooltip title={!loading ? "Generate Plan" : "Generating..."} placement="top">
               <IconButton aria-label="enter" size="large" onClick={() => handleSubmit()}>
                 {!loading ? <HandymanTwoToneIcon sx={{ fontSize: 29 }} /> : <CircularProgress />}
               </IconButton>
