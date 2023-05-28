@@ -47,7 +47,9 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoadi
 
   // set's off api to generate habit plan
   useEffect(() => {
-    const createUserHabitPlan = async () => {
+    let timeoutId: NodeJS.Timeout | undefined;
+
+    const createUserHabitPlan = async (timeoutId: NodeJS.Timeout | undefined) => {
       try {
         setHabitLoading(true);
         const reformattedProfileObject = reformatUserResponses(profileObject);
@@ -59,18 +61,25 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoadi
           },
         });
 
-        router.push(`/habits/${newHabit.habit.id}`);
         setHabitLoading(false);
+
+        timeoutId = setTimeout(() => {
+          router.push(`/habits/${newHabit.habit.id}`);
+        }, 3000);
       } catch (error) {
         setHabitLoading(false);
         console.error(error);
       }
     };
 
-    if (questions.length > 1 && numAnsweredQuestions >= questions.length) {
-      createUserHabitPlan();
+    if (questions.length > 1 && numAnsweredQuestions >= questions.length && !loadingGPT) {
+      createUserHabitPlan(timeoutId);
     }
-  }, [numAnsweredQuestions, promptValue, questions.length, profileObject, setHabitLoading, router]);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [numAnsweredQuestions, promptValue, questions.length, profileObject, setHabitLoading, router, loadingGPT]);
 
   // fetch questions
   const submitHabit = async () => {
