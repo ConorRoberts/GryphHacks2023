@@ -48,7 +48,6 @@ const UserFlow = ({ setHabitLoading }) => {
       // TODO set loader
       try {
         setHabitLoading(true);
-        console.log("LOADED TRU");
         const reformattedProfileObject = reformatUserResponses(profileObject);
         const response = await axios.post<GeneratedUserHabit>("/api/habits/create/", {
           params: {
@@ -61,7 +60,6 @@ const UserFlow = ({ setHabitLoading }) => {
         console.log(response.data.habit);
 
         setHabitLoading(false);
-        console.log("LOADED FALSE");
       } catch (error) {
         setHabitLoading(false);
         console.error(error);
@@ -70,8 +68,7 @@ const UserFlow = ({ setHabitLoading }) => {
 
     console.log(numAnsweredQuestions);
 
-    if (numAnsweredQuestions >= questions.length) {
-      console.log("fired");
+    if (questions.length > 1 && numAnsweredQuestions >= questions.length) {
       createUserHabitPlan();
     }
   }, [numAnsweredQuestions]);
@@ -136,9 +133,9 @@ const UserFlow = ({ setHabitLoading }) => {
   }, [shouldBeginLongFetch, promptValue, isLongFetchInProgress]);
 
   // for testing
-  // useEffect(() => {
-  //   console.log(questions);
-  // }, [questions]);
+  useEffect(() => {
+    console.log(questions);
+  }, [questions]);
 
   const renderQuestions = () => {
     if (questions) {

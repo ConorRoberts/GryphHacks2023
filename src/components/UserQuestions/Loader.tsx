@@ -1,5 +1,24 @@
 import React, { useEffect, useState, useRef } from "react";
-import { CircularProgress, Box, useTheme, Typography } from "@mui/material";
+import { CircularProgress, Box, useTheme, Typography, Button } from "@mui/material";
+import SuccessHabitPlanAnim from "./SuccessHabitPlanAnim";
+import { styled } from "@mui/system";
+
+const CustomSuccessButton = styled(Button)(({ theme }) => ({
+  width: "100%",
+  height: 60,
+  fontSize: 20,
+  borderRadius: theme.shape.borderRadius,
+  borderWidth: 1.5,
+  backgroundColor: "#fff",
+  color: theme.palette.primary.main,
+  textTransform: "none",
+  marginTop: 40,
+  justifyContent: "flex-start",
+  "&:hover": {
+    color: "#000",
+    backgroundColor: "#f6f6f6",
+  },
+}));
 
 const Loader = ({ habitLoading }) => {
   const theme = useTheme();
@@ -82,18 +101,22 @@ const Loader = ({ habitLoading }) => {
             </Typography>
           </>
         ) : (
-          <Typography
-            variant="h2"
-            component="h4"
-            sx={{
-              mt: 4,
-              textAlign: "center",
-              color: theme.palette.primary.main,
-              fontSize: { xs: 22, md: 30 },
-            }}
-          >
-            Loaded
-          </Typography>
+          <>
+            <SuccessHabitPlanAnim />
+            <Typography
+              variant="h2"
+              component="h4"
+              sx={{
+                mt: 4,
+                textAlign: "center",
+                color: theme.palette.primary.main,
+                fontSize: { xs: 22, md: 30 },
+              }}
+            >
+              And done!
+            </Typography>
+            <CustomSuccessButton variant="contained">Check out your habit plan</CustomSuccessButton>
+          </>
         )}
       </Box>
     </Box>
