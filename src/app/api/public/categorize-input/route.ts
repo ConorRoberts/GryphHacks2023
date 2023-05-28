@@ -1,27 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { categorizeInput } from "~/src/utils/categorizeInput";
 import { prisma } from "~/src/utils/prisma";
 
 const categorizeInputRequest = z.object({ input: z.string(), tier: z.coerce.number().gt(0).catch(1) });
-
-type CategorizationResult = {
-  sequence: string;
-  labels: string[];
-  scores: number[];
-};
-
 export type GetInputCategoryResponse = { category: string };
-
-const categorize = async (inputs: string, categories: string[]) => {
-  const response = await fetch("https://api-inference.huggingface.co/models/facebook/bart-large-mnli", {
-    headers: { Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}` },
-    method: "POST",
-    body: JSON.stringify({ inputs, parameters: { candidate_labels: categories } }),
-  });
-  const result = (await response.json()) as CategorizationResult;
-
-  return result;
-};
 
 export const GET = async (request: Request) => {
   const { searchParams } = new URL(request.url);
@@ -41,7 +24,7 @@ export const GET = async (request: Request) => {
     },
   });
 
-  const result = await categorize(
+  const result = await categorizeInput(
     params.data.input,
     possibleCategories.map((e) => e.name)
   );

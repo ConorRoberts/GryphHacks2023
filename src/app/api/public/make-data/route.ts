@@ -12,11 +12,11 @@ export const GET = async () => {
     followUp?: Question;
   };
 
-  const questionList = dietaryQuestions as Question[];
+  const questionList = cognitiveQuestions as Question[];
 
   const category = await prisma.habitCategory.findFirst({
     where: {
-      name: "dietary",
+      name: "cognitive",
     },
   });
 
@@ -73,6 +73,46 @@ export const GET = async () => {
 
   return NextResponse.json({ hi: "ss" });
 };
+
+const cognitiveQuestions = [
+  {
+    question: "How much time can you dedicate to a cognitive improvement habit each day?",
+    options: ["Less than 1h", "1h", "2h", "3h", "4h+"],
+  },
+  {
+    question:
+      "Are there any physical limitations or health conditions that may impact your ability to engage in certain cognitive activities?",
+    options: ["yes", "no"],
+  },
+  {
+    question:
+      "Do you have access to necessary resources (books, courses, internet, etc.) to support your cognitive improvement habit?",
+    options: ["yes", "no"],
+  },
+  {
+    question:
+      "Are there any financial constraints that may limit your ability to invest in cognitive improvement resources or programs?",
+    options: ["yes", "no"],
+  },
+  {
+    question: "Do you have a quiet and distraction-free environment to engage in cognitive activities?",
+    options: ["yes", "no"],
+  },
+  {
+    question:
+      "Are you comfortable with incorporating technology or digital tools into your cognitive improvement habit?",
+    options: ["yes", "no"],
+  },
+  {
+    question:
+      "Do you have a support system or accountability partner to help you stay on track with your cognitive improvement habit?",
+    options: ["yes", "no"],
+  },
+  {
+    question: "Are you more motivated to learn and engage in cognitive activities alone or with others?",
+    options: ["yes", "no"],
+  },
+];
 
 const fitnessQuestionsList = [
   {

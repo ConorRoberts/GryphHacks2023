@@ -1,24 +1,25 @@
 "use client";
+
 import axios from "axios";
-import { OpenAIApi } from "openai";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { FC, useEffect, useState } from "react";
 import { flushSync } from "react-dom";
+import { CreateHabitResponse } from "~/src/app/api/habits/create/route";
 import { GetInputCategoryResponse } from "~/src/app/api/public/categorize-input/route";
 import { GetCategoryQuestionsResponse } from "~/src/app/api/public/category-questions/route";
-import { scrollDown, reformatUserResponses } from "~/src/utils/helper";
+import { reformatUserResponses } from "~/src/utils/helper";
 import MainSearch from "../../components/UserQuestions/MainSearch";
 import Medium from "../../components/UserQuestions/Medium";
 import Question from "../../components/UserQuestions/Question";
 
-type GeneratedUserHabit = Awaited<ReturnType<OpenAIApi["createCompletion"]>>;
-
-const UserFlow = ({ setHabitLoading }) => {
+const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoading }) => {
   // for fetching questions
   const [promptValue, setPromptValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState<GetCategoryQuestionsResponse["questions"]>([]);
   const [shouldBeginLongFetch, setShouldBeginLongFetch] = useState(false);
   const [isLongFetchInProgress, setIsLongFetchInProgress] = useState(false);
+  const router = useRouter();
 
   // for building user profile
   const [questionValue, setQuestionValue] = useState("");
@@ -49,7 +50,7 @@ const UserFlow = ({ setHabitLoading }) => {
       try {
         setHabitLoading(true);
         const reformattedProfileObject = reformatUserResponses(profileObject);
-        const response = await axios.post<GeneratedUserHabit>("/api/habits/create/", {
+        const { data: newHabit } = await axios.post<CreateHabitResponse>("/api/habits/create/", {
           params: {
             currentDay: 1,
             habit: promptValue,
@@ -57,8 +58,7 @@ const UserFlow = ({ setHabitLoading }) => {
           },
         });
 
-        console.log(response.data.habit);
-
+        router.push(`/habits/${newHabit.habit.id}`);
         setHabitLoading(false);
       } catch (error) {
         setHabitLoading(false);
@@ -66,12 +66,10 @@ const UserFlow = ({ setHabitLoading }) => {
       }
     };
 
-    console.log(numAnsweredQuestions);
-
     if (questions.length > 1 && numAnsweredQuestions >= questions.length) {
       createUserHabitPlan();
     }
-  }, [numAnsweredQuestions]);
+  }, [numAnsweredQuestions, promptValue, questions.length, profileObject, setHabitLoading, router]);
 
   // fetch questions
   const submitHabit = async () => {
@@ -128,29 +126,6 @@ const UserFlow = ({ setHabitLoading }) => {
     }
   }, [shouldBeginLongFetch, promptValue, isLongFetchInProgress]);
 
-  // for testing
-  // useEffect(() => {
-  //   console.log(questions);
-  // }, [questions]);
-  // useEffect(() => {
-  //   console.log(JSON.stringify(profileObject));
-  // }, [profileObject]);
-
-  const renderQuestions = () => {
-    if (questions) {
-      return questions.map((question, index) => (
-        <Question
-          key={index}
-          question={question}
-          setAnswerValue={setAnswerValue}
-          setQuestionValue={setQuestionValue}
-          numAnsweredQuestions={numAnsweredQuestions}
-          setNumAnsweredQuestions={setNumAnsweredQuestions}
-        />
-      ));
-    }
-  };
-
   return (
     <>
       <MainSearch
@@ -161,7 +136,16 @@ const UserFlow = ({ setHabitLoading }) => {
       />
       <Medium />
 
-      {renderQuestions()}
+      {questions.map((question, index) => (
+        <Question
+          key={`question input ${index}`}
+          question={question}
+          setAnswerValue={setAnswerValue}
+          setQuestionValue={setQuestionValue}
+          numAnsweredQuestions={numAnsweredQuestions}
+          setNumAnsweredQuestions={setNumAnsweredQuestions}
+        />
+      ))}
     </>
   );
 };

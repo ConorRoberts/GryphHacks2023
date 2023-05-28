@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { categorizeInput } from "~/src/utils/categorizeInput";
 import { getOpenAiClient } from "~/src/utils/getOpenAiClient";
+import { prisma } from "~/src/utils/prisma";
 
 const generatedQuestionSchema = z.object({ question: z.string(), options: z.string().array() }).array();
 const generateUserQuizRequestSchema = z.object({ prompt: z.string() });
@@ -15,7 +17,26 @@ export const POST = async (request: Request) => {
       return NextResponse.json({ message: `Invalid body - ${JSON.stringify(body.error.message)}` }, { status: 400 });
     }
 
-    const prompt = `I want to build a habit of ${body.data.prompt}. Create a valid JSON array array of 10 objects each object should contain two attributes, a question and options. The question should gather more information about me and also ask some questions regarding specific constraints that may limit my ability to build my habit plan (a question can either require input or be multiple choice but never be both, multiple choice questions cannot be have input, and questions that require input cannot have multiple options). The options attribute should be an array of options  only if the question is multiple choice. If the question requires an input, the option attribute should be an empty array. Now generate some multiple choice questions and some questions that require an input.  A question that requires an input and is not multiple choice MUST NOT have any other options. If a question requires an input there must no options . Understand that you need to generate at least two questions that require an input, please remember to generate at least two questions that require an input.'.`;
+    const possibleCategories = await prisma.habitCategory.findMany({
+      where: {
+        tier: 1,
+      },
+    });
+
+    const {
+      labels: [category],
+    } = await categorizeInput(
+      body.data.prompt,
+      possibleCategories.map((e) => e.name)
+    );
+
+    const dbQuestions = await prisma.question.findMany({ where: { category: { name: category } } });
+
+    const prompt = `I want to build a habit of ${
+      body.data.prompt
+    }. Create a valid JSON array array of 10 objects each object should contain two attributes, a question and options. The question should gather more information about me and also ask some questions regarding specific constraints that may limit my ability to build my habit plan (a question can either require input or be multiple choice but never be both, multiple choice questions cannot be have input, and questions that require input cannot have multiple options). The options attribute should be an array of options  only if the question is multiple choice. If the question requires an input, the option attribute should be an empty array. Now generate some multiple choice questions and some questions that require an input.  A question that requires an input and is not multiple choice MUST NOT have any other options. If a question requires an input there must no options . Understand that you need to generate at least two questions that require an input, please remember to generate at least two questions that require an input.'.\n\nDo not return any questions that are present in the following list or similar to any of the following: ${dbQuestions
+      .map((e) => `"${e.prompt}"`)
+      .join(",")}`;
     const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: [
