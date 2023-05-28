@@ -115,9 +115,20 @@ const Loader: FC<{ habitLoading: boolean }> = ({ habitLoading }) => {
             >
               And done!
             </Typography>
-            <Link href="/habits">
-              <CustomSuccessButton variant="contained">Check out your habit plan</CustomSuccessButton>
-            </Link>
+            <Typography
+              variant="h2"
+              component="h5"
+              sx={{
+                mt: 2,
+                textAlign: "center",
+                color: theme.palette.primary.main,
+                fontSize: { xs: 16, md: 20 },
+                opacity: 0.5,
+                fontWeight: 900,
+              }}
+            >
+              one sec... sending you to your habit plan
+            </Typography>
           </>
         )}
       </Box>

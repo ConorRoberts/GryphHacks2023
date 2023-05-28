@@ -11,11 +11,13 @@ import { reformatUserResponses } from "~/src/utils/helper";
 import MainSearch from "../../components/UserQuestions/MainSearch";
 import Medium from "../../components/UserQuestions/Medium";
 import Question from "../../components/UserQuestions/Question";
+import GPTLoader from "./GPTLoader";
 
 const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoading }) => {
   // for fetching questions
   const [promptValue, setPromptValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingGPT, setLoadingGPT] = useState(false);
   const [questions, setQuestions] = useState<GetCategoryQuestionsResponse["questions"]>([]);
   const [shouldBeginLongFetch, setShouldBeginLongFetch] = useState(false);
   const [isLongFetchInProgress, setIsLongFetchInProgress] = useState(false);
@@ -45,8 +47,9 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoadi
 
   // set's off api to generate habit plan
   useEffect(() => {
-    const createUserHabitPlan = async () => {
-      // TODO set loader
+    let timeoutId: NodeJS.Timeout | undefined;
+
+    const createUserHabitPlan = async (timeoutId: NodeJS.Timeout | undefined) => {
       try {
         setHabitLoading(true);
         const reformattedProfileObject = reformatUserResponses(profileObject);
@@ -58,18 +61,25 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoadi
           },
         });
 
-        router.push(`/habits/${newHabit.habit.id}`);
         setHabitLoading(false);
+
+        timeoutId = setTimeout(() => {
+          router.push(`/habits/${newHabit.habit.id}`);
+        }, 3000);
       } catch (error) {
         setHabitLoading(false);
         console.error(error);
       }
     };
 
-    if (questions.length > 1 && numAnsweredQuestions >= questions.length) {
-      createUserHabitPlan();
+    if (questions.length > 1 && numAnsweredQuestions >= questions.length && !loadingGPT) {
+      createUserHabitPlan(timeoutId);
     }
-  }, [numAnsweredQuestions, promptValue, questions.length, profileObject, setHabitLoading, router]);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [numAnsweredQuestions, promptValue, questions.length, profileObject, setHabitLoading, router, loadingGPT]);
 
   // fetch questions
   const submitHabit = async () => {
@@ -105,6 +115,7 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoadi
   useEffect(() => {
     const fetchGPTData = async () => {
       setIsLongFetchInProgress(true);
+      setLoadingGPT(true);
       try {
         const { data } = await axios.post<GetCategoryQuestionsResponse>("/api/questions/generate-user-quiz/", {
           prompt: promptValue,
@@ -112,10 +123,12 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoadi
 
         setQuestions((q) => [...q, ...data.questions]);
 
+        setLoadingGPT(false);
         setShouldBeginLongFetch(false);
         setIsLongFetchInProgress(false);
       } catch (error) {
         console.error(error);
+        setLoadingGPT(false);
         setShouldBeginLongFetch(false);
         setIsLongFetchInProgress(false);
       }
@@ -146,6 +159,7 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoadi
           setNumAnsweredQuestions={setNumAnsweredQuestions}
         />
       ))}
+      {loadingGPT && <GPTLoader />}
     </>
   );
 };

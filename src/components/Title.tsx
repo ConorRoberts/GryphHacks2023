@@ -18,7 +18,7 @@ const Title = () => {
           Habit Step
         </Typography>
         <Typography variant="h6" component="h1" sx={{ m: 0, mt: 1, opacity: 1, fontSize: 22 }}>
-          create a step-by-step plan to build your habits
+          create a step-by-step plan to build new habits
         </Typography>
         <Typography variant="h6" component="h1" sx={{ m: 0, mt: 1, opacity: 0.3, fontSize: 16, fontWeight: 900 }}>
           powered by AI
