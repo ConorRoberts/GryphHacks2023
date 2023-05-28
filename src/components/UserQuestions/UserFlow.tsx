@@ -40,11 +40,6 @@ const UserFlow = () => {
     });
   }, [questionValue, answerValue]);
 
-  // useEffect(() => {
-  //   console.log("called");
-  //   createUserHabitPlan();
-  // }, []);
-
   const createUserHabitPlan = async () => {
     // TODO set loader
     try {
@@ -65,6 +60,12 @@ const UserFlow = () => {
       console.error(error);
     }
   };
+
+  // for testing
+  // useEffect(() => {
+  //   console.log("called");
+  //   createUserHabitPlan();
+  // }, []);
 
   useEffect(() => {
     console.log(JSON.stringify(profileObject));

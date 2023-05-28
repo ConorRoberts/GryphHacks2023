@@ -66,7 +66,7 @@ export const POST = async (request: Request) => {
         const newHabit = await prisma.habit.create({
           data: {
             userId,
-            name: desiredHabit.data,
+            name: habit,
             timeframe: new Date(),
             tasks: {
               createMany: { data: tasks },
