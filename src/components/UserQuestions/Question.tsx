@@ -1,5 +1,5 @@
 import SubdirectoryArrowLeftIcon from "@mui/icons-material/SubdirectoryArrowLeft";
-import { Box, Button, IconButton, Input, Typography, useTheme, Tooltip } from "@mui/material";
+import { Box, Button, Input, Tooltip, Typography, useTheme } from "@mui/material";
 import { styled } from "@mui/system";
 import { FC, useState } from "react";
 import { scrollDown } from "../../utils/helper";
@@ -122,6 +122,7 @@ const Question: React.FC<QuestionProps> = ({ question, options, setAnswerValue, 
           justifyContent: "center",
           alignItems: "center",
         }}
+        id={`question ${question}`}
       >
         <Box sx={{ display: "flex", flexDirection: "column", maxWidth: { xs: "80%", sm: "70%", md: "50%" } }}>
           <Typography
