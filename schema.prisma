@@ -23,8 +23,10 @@ model Task {
 }
 
 model Habit {
-  id          Int               @id @default(autoincrement())
-  name        String
+  id   Int    @id @default(autoincrement())
+  name String
+
+  // The end date of the habit
   timeframe   DateTime
   userId      String
   constraints HabitConstraint[]
