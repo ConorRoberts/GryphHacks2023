@@ -118,13 +118,7 @@ const UserFlow = () => {
   const renderQuestions = () => {
     if (questions) {
       return questions.map((question, index) => (
-        <Question
-          key={index}
-          question={question.prompt}
-          options={question.options}
-          setAnswerValue={setAnswerValue}
-          setQuestionValue={setQuestionValue}
-        />
+        <Question key={index} question={question} setAnswerValue={setAnswerValue} setQuestionValue={setQuestionValue} />
       ));
     }
   };
