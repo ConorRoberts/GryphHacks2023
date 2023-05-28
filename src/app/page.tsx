@@ -24,7 +24,7 @@ export default function Home() {
     <main>
       <ThemeProvider theme={theme}>
         <Title />
-        <UserFlow setHabitLoading={setHabitLoading} />
+        <UserFlow setHabitLoading={setHabitLoading} habitLoading={habitLoading} />
         <Loader habitLoading={habitLoading} />
       </ThemeProvider>
     </main>

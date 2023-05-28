@@ -13,7 +13,10 @@ import Medium from "../../components/UserQuestions/Medium";
 import Question from "../../components/UserQuestions/Question";
 import GPTLoader from "./GPTLoader";
 
-const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoading }) => {
+const UserFlow: FC<{ setHabitLoading: (v: boolean) => void; habitLoading: boolean }> = ({
+  setHabitLoading,
+  habitLoading,
+}) => {
   // for fetching questions
   const [promptValue, setPromptValue] = useState("");
   const [loading, setLoading] = useState(false);
@@ -72,14 +75,23 @@ const UserFlow: FC<{ setHabitLoading: (v: boolean) => void }> = ({ setHabitLoadi
       }
     };
 
-    if (questions.length > 1 && numAnsweredQuestions >= questions.length && !loadingGPT) {
+    if (questions.length > 1 && numAnsweredQuestions >= questions.length && !loadingGPT && !habitLoading) {
       createUserHabitPlan(timeoutId);
     }
 
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [numAnsweredQuestions, promptValue, questions.length, profileObject, setHabitLoading, router, loadingGPT]);
+  }, [
+    numAnsweredQuestions,
+    promptValue,
+    questions.length,
+    profileObject,
+    setHabitLoading,
+    router,
+    loadingGPT,
+    habitLoading,
+  ]);
 
   // fetch questions
   const submitHabit = async () => {
