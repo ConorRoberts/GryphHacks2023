@@ -1,6 +1,6 @@
-# HabitPlan ~ GryphHacks2023
+# Habit Step ~ GryphHacks2023
 
-Check out our app, [Habit Plan](https://gryph-hacks2023-ten.vercel.app/) 👍
+Check out our app, [Habit Step](https://gryph-hacks2023-ten.vercel.app/) 👍
 <br/>
 <br/>
 
