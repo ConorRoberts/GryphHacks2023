@@ -2,7 +2,7 @@ import { auth } from "@clerk/nextjs";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "~/src/utils/prisma";
-import HabitListElement from "../api/habits/HabitListElement";
+import HabitListElement from "./HabitListElement";
 
 const Page = async () => {
   const { userId } = auth();
@@ -14,6 +14,9 @@ const Page = async () => {
   const habits = await prisma.habit.findMany({
     where: {
       userId,
+    },
+    orderBy: {
+      timeframe: "asc",
     },
   });
 
@@ -32,7 +35,7 @@ const Page = async () => {
       )}
       {habits.length > 0 && (
         <div className="mx-auto w-full max-w-xl shadow-lg rounded-xl overflow-hidden flex flex-col border border-gray-100 divide-y divide-gray-100">
-          {habits.reverse().map((h) => (
+          {habits.map((h) => (
             <HabitListElement data={h} key={`habit ${h.id}`} />
           ))}
         </div>
